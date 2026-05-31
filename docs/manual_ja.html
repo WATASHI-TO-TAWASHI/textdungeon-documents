@@ -1,0 +1,1171 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Text Dungeon マニュアル</title>
+<style>
+  :root {
+    --bg: #1a1a2e;
+    --surface: #16213e;
+    --surface2: #0f3460;
+    --accent: #e94560;
+    --gold: #f5a623;
+    --text: #e0e0e0;
+    --text-dim: #9a9ab0;
+    --border: #2a2a4a;
+    --code-bg: #0d0d1a;
+    --green: #4caf82;
+    --blue: #5b9bd5;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', 'Hiragino Sans', 'Yu Gothic', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.8;
+    font-size: 15px;
+  }
+
+  /* ===== HEADER ===== */
+  header {
+    background: linear-gradient(135deg, #0d0d1a 0%, #1a1a3a 50%, #0d1a2e 100%);
+    border-bottom: 2px solid var(--accent);
+    padding: 32px 24px 24px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at center, rgba(233,69,96,0.08) 0%, transparent 70%);
+  }
+  header h1 {
+    font-size: 2.2em;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    color: var(--gold);
+    text-shadow: 0 0 20px rgba(245,166,35,0.4);
+    position: relative;
+  }
+  header p {
+    margin-top: 8px;
+    color: var(--text-dim);
+    font-size: 0.9em;
+    position: relative;
+  }
+
+  /* ===== LAYOUT ===== */
+  .wrapper {
+    display: flex;
+    max-width: 1200px;
+    margin: 0 auto;
+    gap: 0;
+  }
+
+  /* ===== SIDEBAR ===== */
+  nav {
+    width: 240px;
+    flex-shrink: 0;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 20px 0;
+  }
+  nav::-webkit-scrollbar { width: 4px; }
+  nav::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  nav .nav-title {
+    padding: 0 16px 12px;
+    font-size: 0.75em;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 8px;
+  }
+  nav a {
+    display: block;
+    padding: 8px 16px;
+    color: var(--text-dim);
+    text-decoration: none;
+    font-size: 0.88em;
+    transition: all 0.15s;
+    border-left: 3px solid transparent;
+  }
+  nav a:hover {
+    color: var(--text);
+    background: rgba(255,255,255,0.04);
+    border-left-color: var(--accent);
+  }
+  nav a.active {
+    color: var(--gold);
+    border-left-color: var(--gold);
+    background: rgba(245,166,35,0.06);
+  }
+  nav a .num {
+    display: inline-block;
+    min-width: 20px;
+    color: var(--accent);
+    font-weight: 700;
+    font-size: 0.85em;
+  }
+
+  /* ===== MAIN CONTENT ===== */
+  main {
+    flex: 1;
+    min-width: 0;
+    padding: 32px 40px 60px;
+  }
+
+  /* ===== SECTIONS ===== */
+  .section {
+    margin-bottom: 56px;
+    scroll-margin-top: 20px;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-num {
+    background: var(--accent);
+    color: #fff;
+    font-size: 0.8em;
+    font-weight: 700;
+    width: 32px; height: 32px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 6px;
+    flex-shrink: 0;
+  }
+  .section-num.gold { background: var(--gold); color: #1a1a2e; }
+  .section-title {
+    font-size: 1.4em;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  /* ===== SUBSECTIONS ===== */
+  .subsection {
+    margin: 24px 0;
+  }
+  .subsection-title {
+    font-size: 1.05em;
+    font-weight: 700;
+    color: var(--gold);
+    margin-bottom: 10px;
+    padding-left: 12px;
+    border-left: 3px solid var(--gold);
+  }
+
+  p { margin-bottom: 10px; }
+
+  /* ===== GUIDE BOXES ===== */
+  .guide-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 14px;
+    margin: 16px 0;
+  }
+  .guide-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+  }
+  .guide-card h4 {
+    color: var(--gold);
+    font-size: 0.95em;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .guide-card p {
+    font-size: 0.88em;
+    color: var(--text-dim);
+    margin: 0;
+    line-height: 1.6;
+  }
+
+  /* ===== NOTES / TIPS ===== */
+  .note {
+    background: rgba(91,155,213,0.08);
+    border: 1px solid rgba(91,155,213,0.3);
+    border-left: 4px solid var(--blue);
+    border-radius: 0 6px 6px 0;
+    padding: 10px 14px;
+    margin: 12px 0;
+    font-size: 0.88em;
+    color: #b8cfe8;
+  }
+  .note::before { content: '※ '; font-weight: 700; color: var(--blue); }
+
+  .warn {
+    background: rgba(245,166,35,0.07);
+    border: 1px solid rgba(245,166,35,0.3);
+    border-left: 4px solid var(--gold);
+    border-radius: 0 6px 6px 0;
+    padding: 10px 14px;
+    margin: 12px 0;
+    font-size: 0.88em;
+    color: #e8d5a0;
+  }
+  .warn::before { content: '⚠ '; font-weight: 700; }
+
+  /* ===== COMMAND TABLE ===== */
+  .cmd-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0;
+    font-size: 0.9em;
+  }
+  .cmd-table th {
+    background: var(--surface2);
+    color: var(--gold);
+    padding: 8px 14px;
+    text-align: left;
+    font-weight: 700;
+    border-bottom: 2px solid var(--accent);
+  }
+  .cmd-table td {
+    padding: 7px 14px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .cmd-table tr:hover td { background: rgba(255,255,255,0.03); }
+  .cmd-table .key {
+    font-family: 'Consolas', 'Courier New', monospace;
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 2px 7px;
+    color: var(--green);
+    font-size: 0.95em;
+    white-space: nowrap;
+  }
+
+  /* ===== CODE / EXAMPLE ===== */
+  .example-box {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px 16px;
+    margin: 12px 0;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 0.88em;
+    color: var(--green);
+    white-space: pre;
+    line-height: 1.7;
+  }
+
+  /* ===== STAT BADGES ===== */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 12px;
+    margin: 16px 0;
+  }
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+  }
+  .stat-card h4 {
+    color: var(--accent);
+    font-size: 0.95em;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .stat-card p { font-size: 0.87em; color: var(--text-dim); margin: 0; line-height: 1.6; }
+
+  /* ===== SKILL TABLE ===== */
+  .skill-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0;
+    font-size: 0.88em;
+  }
+  .skill-table th {
+    background: var(--surface2);
+    color: var(--text-dim);
+    padding: 6px 12px;
+    text-align: left;
+    font-size: 0.85em;
+    border-bottom: 1px solid var(--border);
+  }
+  .skill-table td {
+    padding: 6px 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  .skill-table tr:hover td { background: rgba(255,255,255,0.025); }
+
+  /* ===== ITEM TYPE CARDS ===== */
+  .item-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 14px;
+    margin: 16px 0;
+  }
+  .item-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+  }
+  .item-card h4 {
+    color: var(--green);
+    font-size: 0.95em;
+    font-weight: 700;
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+  }
+  .item-card p { font-size: 0.87em; color: var(--text-dim); margin: 0; line-height: 1.65; }
+
+  /* ===== TOC (top) ===== */
+  .toc-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin-bottom: 36px;
+  }
+  .toc-box h3 {
+    color: var(--gold);
+    font-size: 0.9em;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .toc-box ol {
+    list-style: none;
+    column-count: 2;
+    column-gap: 20px;
+  }
+  .toc-box li { margin-bottom: 6px; }
+  .toc-box a {
+    color: var(--text-dim);
+    text-decoration: none;
+    font-size: 0.92em;
+    transition: color 0.15s;
+  }
+  .toc-box a:hover { color: var(--gold); }
+  .toc-box .toc-num { color: var(--accent); font-weight: 700; margin-right: 6px; }
+
+  /* ===== AUTO TARGET TABLE ===== */
+  .auto-target {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 4px 16px;
+    margin: 10px 0;
+    font-size: 0.9em;
+  }
+  .auto-target .k { font-family: monospace; background: var(--code-bg); border: 1px solid var(--border); border-radius: 4px; padding: 2px 8px; color: var(--gold); text-align: center; }
+  .auto-target .v { color: var(--text-dim); align-self: center; }
+
+  /* ===== MACRO BOX ===== */
+  .macro-example {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px 16px;
+    margin: 12px 0;
+    font-family: monospace;
+    font-size: 0.9em;
+    line-height: 1.8;
+  }
+  .macro-example .comment { color: var(--text-dim); }
+  .macro-example .key-def { color: var(--green); }
+  .macro-example .value { color: var(--gold); }
+  .macro-example .section-label { color: var(--accent); font-weight: 700; }
+
+  hr.section-sep {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 24px 0;
+  }
+
+  @media (max-width: 768px) {
+    nav { display: none; }
+    main { padding: 20px 16px 40px; }
+    .guide-grid, .stat-grid, .item-grid { grid-template-columns: 1fr; }
+    .toc-box ol { column-count: 1; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>⚔ Text Dungeon マニュアル</h1>
+  <p>操作方法・用語・コマンドの完全ガイド</p>
+</header>
+
+<div class="wrapper">
+
+<!-- ===== SIDEBAR NAV ===== -->
+<nav id="sidenav">
+  <div class="nav-title">目次</div>
+  <a href="#s0"><span class="num">0.</span> Text Dungeonとは</a>
+  <a href="#s1"><span class="num">1.</span> ゲーム開始と中断</a>
+  <a href="#s2"><span class="num">2.</span> キャラクターの作成</a>
+  <a href="#s3"><span class="num">3.</span> メイン画面</a>
+  <a href="#s4"><span class="num">4.</span> 戦闘画面と戦闘</a>
+  <a href="#s5"><span class="num">5.</span> 呪文</a>
+  <a href="#s6"><span class="num">6.</span> アイテム</a>
+  <a href="#s7"><span class="num">7.</span> オブジェクト</a>
+  <a href="#s8"><span class="num">8.</span> コマンド</a>
+  <a href="#s9"><span class="num">9.</span> マクロ</a>
+</nav>
+
+<!-- ===== MAIN ===== -->
+<main>
+
+<!-- TOC -->
+<div class="toc-box">
+  <h3>📖 目次</h3>
+  <ol>
+    <li><a href="#s0"><span class="toc-num">0.</span>Text Dungeonとは</a></li>
+    <li><a href="#s1"><span class="toc-num">1.</span>ゲーム開始と再開及び中断</a></li>
+    <li><a href="#s2"><span class="toc-num">2.</span>キャラクターの作成</a></li>
+    <li><a href="#s3"><span class="toc-num">3.</span>メイン画面</a></li>
+    <li><a href="#s4"><span class="toc-num">4.</span>戦闘画面と戦闘</a></li>
+    <li><a href="#s5"><span class="toc-num">5.</span>呪文</a></li>
+    <li><a href="#s6"><span class="toc-num">6.</span>アイテム</a></li>
+    <li><a href="#s7"><span class="toc-num">7.</span>オブジェクト</a></li>
+    <li><a href="#s8"><span class="toc-num">8.</span>コマンド</a></li>
+    <li><a href="#s9"><span class="toc-num">9.</span>マクロ</a></li>
+  </ol>
+</div>
+
+
+<!-- ===== SECTION 0 ===== -->
+<section class="section" id="s0">
+  <div class="section-header">
+    <div class="section-num gold">0</div>
+    <div class="section-title">Text Dungeonとは</div>
+  </div>
+  <p>Text Dungeonはテキストアドベンチャー形式のRPGです。ゲームの目的は地下迷宮の奥深くに潜む悪の魔術師『シンゴー』から<strong>「生命の指輪」</strong>を奪還し、地上に持ち帰ることです。</p>
+</section>
+
+
+<!-- ===== SECTION 1 ===== -->
+<section class="section" id="s1">
+  <div class="section-header">
+    <div class="section-num">1</div>
+    <div class="section-title">ゲーム開始と再開及び中断</div>
+  </div>
+
+  <p>TextDungeon.exe を実行するとタイトル画面が表示され、Text Dungeonのロゴと共に以下の選択肢が表示されます。</p>
+
+  <div class="example-box">1. 最初から
+2. 続きから</div>
+
+  <div class="subsection">
+    <div class="subsection-title">新規ゲーム開始</div>
+    <p><strong>1</strong> を選択（項目先頭の文字をキー入力、またはクリック）するとキャラクター作成画面に進みます。</p>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">続きから再開</div>
+    <p><strong>2</strong> を選択し、キャラクターの名前を入力して <kbd>Enter</kbd> を押してください。</p>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">中断・セーブ</div>
+    <p>ウィンドウ右上の ✕ ボタンなどでアプリケーションを終了すると、自動でセーブファイルが作成されます。次回「続きから」で再開できます。</p>
+  </div>
+</section>
+
+
+<!-- ===== SECTION 2 ===== -->
+<section class="section" id="s2">
+  <div class="section-header">
+    <div class="section-num">2</div>
+    <div class="section-title">キャラクターの作成</div>
+  </div>
+
+  <p>キャラクター（以下キャラ）作成画面では新たなキャラが提示されます。<br>
+  <strong>Enter</strong> を押すか「決定」をクリックでそのキャラでゲーム開始。<br>
+  <strong>'r'</strong> キーまたは「リロール」で各種パラメーターを変更した新キャラを作成（何度でも可）。</p>
+  <p>青文字または黄文字で表示されている項目が任意設定可能なパラメーターです。</p>
+  <div class="note" style="margin-bottom:4px;">黄文字の項目は変更すると能力値・スキルなどが自動でリロールされます。</div>
+
+  <hr class="section-sep">
+
+  <div class="subsection">
+    <div class="subsection-title">各パラメーターの説明</div>
+    <div class="stat-grid">
+      <div class="stat-card"><h4>通称</h4><p>キャラの通り名・称号・自称。能力やスキルには影響しません。</p></div>
+      <div class="stat-card"><h4>名前</h4><p>キャラの名前。能力やスキルには影響しません。</p></div>
+      <div class="stat-card"><h4>性別</h4><p>男性・女性・不明の3つから選択。能力やスキルには影響しません。</p></div>
+      <div class="stat-card"><h4>年齢</h4><p>15〜99の間で設定。能力やスキルには影響しません。</p></div>
+      <div class="stat-card"><h4>身長</h4><p>100〜200の間で設定。能力やスキルには影響しません。</p></div>
+      <div class="stat-card"><h4>体重</h4><p>30〜150の間で設定。能力やスキルには影響しません。</p></div>
+      <div class="stat-card"><h4>タイプ</h4><p>能力的な適性・成長傾向を示す。6タイプから選択。変更すると能力値・スキルが自動リロールされます。</p></div>
+      <div class="stat-card"><h4>出身地</h4><p>10の地方から選択。主に初期能力やスキルに影響。変更すると一部パラメータが自動リロールされます。</p></div>
+    </div>
+  </div>
+
+  <div class="note">どのタイプを選んでも装備や使用できるアイテムに制限はありません。</div>
+
+  <hr class="section-sep">
+
+  <div class="subsection">
+    <div class="subsection-title">タイプガイド</div>
+    <div class="guide-grid">
+      <div class="guide-card">
+        <h4>⚔ 戦士</h4>
+        <p>体力・技量が高く戦闘スキルが伸びやすい。魔法関連スキルはほぼ覚えず魔力も低い。</p>
+      </div>
+      <div class="guide-card">
+        <h4>🗡 盗賊</h4>
+        <p>運勢が高く隠密・開錠など冒険スキルに長けている。不意打ちや投擲も得意。魔法は戦士よりは使える。</p>
+      </div>
+      <div class="guide-card">
+        <h4>✝ 僧侶</h4>
+        <p>バランス型。戦闘も魔法もこなせ、多くの呪文を習得可能。スキルもバランス良く修得。</p>
+      </div>
+      <div class="guide-card">
+        <h4>✨ 魔法使い</h4>
+        <p>魔力が高く非常に多くの呪文を習得可能。開始時に呪文書を1冊所持。直接戦闘は苦手。</p>
+      </div>
+      <div class="guide-card">
+        <h4>⚔✨ 魔法戦士</h4>
+        <p>戦士と魔法使い両方の特性。初期から魔法が使え体力・技量も高い。ただし成長は遅く余地も小さめ。</p>
+      </div>
+      <div class="guide-card">
+        <h4>👤 市民</h4>
+        <p>一般市民。体力・技量が低く初期スキルは1つだけ。戦闘・魔法関連はほぼ修得していない。</p>
+      </div>
+    </div>
+  </div>
+
+  <hr class="section-sep">
+
+  <div class="subsection">
+    <div class="subsection-title">出身地ガイド</div>
+    <div class="guide-grid">
+      <div class="guide-card"><h4>中央都市</h4><p>国の首都。高い教育水準を誇り、技量値が高くなる傾向。</p></div>
+      <div class="guide-card"><h4>商業都市</h4><p>中央都市東側の湾岸都市。貿易・商業で繁栄。運勢値が高くなる傾向。</p></div>
+      <div class="guide-card"><h4>鉱山都市</h4><p>西の鉱山で発展した都市。体力値が高くなる傾向。</p></div>
+      <div class="guide-card"><h4>森林の町</h4><p>北の大森林地帯の入口。自然と共に暮らす町。隠密行動にボーナス。</p></div>
+      <div class="guide-card"><h4>遺跡の町</h4><p>南西部砂漠地帯の遺跡群近郊。高い魔力を持つと言われる。</p></div>
+      <div class="guide-card"><h4>四辻の町</h4><p>東西南北の交易路が交わる場所。多様なボーナスを得る可能性あり。</p></div>
+      <div class="guide-card"><h4>北洋の町</h4><p>北の寒冷地帯の海岸。体格に優れ戦士向き。攻撃にボーナス。</p></div>
+      <div class="guide-card"><h4>草原の村</h4><p>北西部大草原地帯の集落。移動に関するボーナスあり。</p></div>
+      <div class="guide-card"><h4>沼地の村</h4><p>南東部湿原地帯の集落。魔法に対する高い抵抗力があると言われる。</p></div>
+      <div class="guide-card"><h4>雪原の村</h4><p>北の降雪地帯の集落。粘り強く、飢餓や病気に強いと言われる。</p></div>
+    </div>
+  </div>
+
+  <hr class="section-sep">
+
+  <div class="subsection">
+    <div class="subsection-title">能力値の説明</div>
+    <div class="stat-grid">
+      <div class="stat-card">
+        <h4>❤ 体力</h4>
+        <p>肉体的な損耗に耐える度合い。0以下になるとキャラは死亡しゲームオーバー。食事（<code>E</code>）や休憩（<code>R</code>）で回復。</p>
+      </div>
+      <div class="stat-card">
+        <h4>⚡ 技量</h4>
+        <p>行動・物を扱う能力。高いほど敵に攻撃を当てやすく、敵の攻撃が当たりにくくなる。休憩で回復。</p>
+      </div>
+      <div class="stat-card">
+        <h4>🍀 運勢</h4>
+        <p>キャラの運の強さ。開錠・罠解除の成功率にも影響。休憩で回復。</p>
+      </div>
+      <div class="stat-card">
+        <h4>✨ 魔力</h4>
+        <p>魔法的な力の大きさ。高いほど呪文の効果が大きくなる。ターン経過で緩やかに回復。ゲーム中は表示されない。</p>
+      </div>
+    </div>
+    <div class="note">体力・技量・運勢・魔力にはそれぞれ最大値があり、キャラのレベルアップなどで増加できます。</div>
+    <div class="warn">キャラが死亡するとセーブファイルが自動で削除されます。死亡時はキャラ名＋_morgue.txt がsaveフォルダに出力されます。</div>
+  </div>
+
+  <hr class="section-sep">
+
+  <div class="subsection">
+    <div class="subsection-title">固有の能力 / スキル</div>
+    <p>キャラ固有の能力またはスキルで、キャラ作成時に1つだけ与えられます。ゲーム中に新たに獲得・喪失することはありません。</p>
+  </div>
+
+  <hr class="section-sep">
+
+  <div class="subsection">
+    <div class="subsection-title">スキルガイド</div>
+    <p>スキルとは冒険に役立つ技能や知識のことで、スキルごとにレベルが設定されています。レベルアップにより新スキルの修得やスキルレベルの上昇ができます。スキルは最大8個まで修得可能。<code>S</code> コマンドでスキル一覧を確認できます。</p>
+
+    <table class="skill-table">
+      <tr><th>スキル名</th><th>効果</th></tr>
+      <tr><td>剣術 / 短剣術 / 斧術 / 鈍器術 / 槍術</td><td>対応カテゴリーの武器への習熟度。命中率・ダメージにボーナス。剣術↔短剣術、斧術↔鈍器術には相関あり（片方Lv.nで他方Lv.n-1として計算）。槍術は種別「杖」の武器にも対応。</td></tr>
+      <tr><td>格闘術</td><td>武器なし時に適用。素手時のペナルティ緩和。武器装備時も追加攻撃が発生することあり。</td></tr>
+      <tr><td>投擲</td><td><code>t</code>コマンドでのアイテム投擲時の命中率・ダメージ・効果を増大。</td></tr>
+      <tr><td>躱し身</td><td>敵の攻撃、ブレス攻撃、魔法、罠などを躱しやすくなる。重い鎧では効果半減。</td></tr>
+      <tr><td>甲冑</td><td>鎧装備時の防御力にボーナス。装備鎧の重量を軽く計算。重い鎧ほど効果大。</td></tr>
+      <tr><td>盾</td><td>盾装備時のブロック率・防御力にボーナス。盾の重量も軽く計算。</td></tr>
+      <tr><td>先制</td><td>戦闘時に敵より先に攻撃しやすくなる。直接攻撃の命中率にボーナス。</td></tr>
+      <tr><td>不意打ち</td><td>気づいていない・混乱・恐怖している敵への攻撃に大きなボーナス。短剣類（特にダガー）と相性抜群。</td></tr>
+      <tr><td>隠密</td><td>クリーチャーに気づかれにくくなる。重い鎧では効果半減。</td></tr>
+      <tr><td>俊足</td><td>移動ターン消費の低減。移動時の被攻撃確率を減らし、敵が追跡を諦める確率を増やす。</td></tr>
+      <tr><td>剛力</td><td>持ち物の重量制限上限を増加。</td></tr>
+      <tr><td>収納術</td><td>持ち物の容量制限上限を増加。</td></tr>
+      <tr><td>解除</td><td>鍵開け・罠の識別・解除の成功率を増加。隠し扉・罠の発見も容易に。</td></tr>
+      <tr><td>偸盗術</td><td>盗みの成功率増加。鍵開け・罠解除の成功率も少し向上。</td></tr>
+      <tr><td>狂戦士化</td><td><code>a</code>コマンドで発動可能。戦闘能力大幅強化、移動速度2倍。知的行動は不可。毎ターン体力1消費。一定ターンで終了。暴発の可能性あり。</td></tr>
+      <tr><td>狂戦士化制御</td><td>暴発を抑制。<code>a</code>コマンドで任意のタイミングで狂戦士化停止が可能（確実ではない）。</td></tr>
+      <tr><td>呪文詠唱</td><td>呪文詠唱に必要なターン数（詠唱時間）を減少。呪文記憶容量も増加。</td></tr>
+      <tr><td>神秘学</td><td>呪文詠唱時の体力消費量を減少。</td></tr>
+    </table>
+
+    <div class="subsection" style="margin-top:16px;">
+      <div class="subsection-title">魔法系スキルと対応系統</div>
+      <p>以下のスキルはそれぞれ対応する系統の呪文の効果を高め、詠唱時間・体力消費量を減少させます。</p>
+      <table class="skill-table">
+        <tr><th>スキル</th><th>対応する呪文系統</th></tr>
+        <tr><td>魔法力学</td><td>破壊</td></tr>
+        <tr><td>火の精霊術</td><td>火</td></tr>
+        <tr><td>水の精霊術</td><td>水</td></tr>
+        <tr><td>風の精霊術</td><td>風</td></tr>
+        <tr><td>地の精霊術</td><td>地</td></tr>
+        <tr><td>薬草学</td><td>毒</td></tr>
+        <tr><td>呪術</td><td>呪術</td></tr>
+        <tr><td>幻術</td><td>幻術</td></tr>
+        <tr><td>錬金術</td><td>錬金</td></tr>
+        <tr><td>占星術</td><td>予見</td></tr>
+        <tr><td>転移術</td><td>転移</td></tr>
+      </table>
+      <div class="note">詠唱時間減少は「呪文詠唱」スキルと重複した場合、スキルレベルが高い方のみ適用されます。体力消費量減少は「神秘学」と両方が適用されます。</div>
+    </div>
+  </div>
+
+  <hr class="section-sep">
+
+  <div class="subsection">
+    <div class="subsection-title">初期呪文</div>
+    <p>キャラが最初から覚えている呪文です。</p>
+    <ul style="margin-left:20px; color:var(--text-dim); font-size:0.9em;">
+      <li style="margin-bottom:4px;"><strong>魔法使いタイプ・僧侶タイプ</strong>：2つの呪文を記憶した状態で開始（魔法使いはさらに呪文書1冊所持）</li>
+      <li style="margin-bottom:4px;"><strong>魔法戦士タイプ</strong>：1つの呪文を記憶した状態で開始</li>
+      <li><strong>戦士・盗賊・市民</strong>：初期呪文なし</li>
+    </ul>
+  </div>
+</section>
+
+
+<!-- ===== SECTION 3 ===== -->
+<section class="section" id="s3">
+  <div class="section-header">
+    <div class="section-num">3</div>
+    <div class="section-title">メイン画面</div>
+  </div>
+
+  <p>キャラ作成後に表示されるゲーム進行のメイン画面です。画面は4つの領域に分かれます。</p>
+
+  <div class="guide-grid" style="margin-bottom:16px;">
+    <div class="guide-card"><h4>左上：オブジェクト表示部</h4><p>その場であなたが関与できる項目（オブジェクト）の一覧が番号付きで表示される。</p></div>
+    <div class="guide-card"><h4>右上：ステータス表示部</h4><p>通称・名前・レベル・経験値・各能力値（現在値/最大値）・状態異常などが表示される。</p></div>
+    <div class="guide-card"><h4>左下：メッセージ表示部</h4><p>行動結果のメッセージが表示される。「→続く」が出たらクリックまたはキー入力で次へ。</p></div>
+    <div class="guide-card"><h4>右下：ミニマップ表示部</h4><p>訪れた部屋が青い四角で表示される。白い点が現在地。</p></div>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">オブジェクトの操作</div>
+    <p>オブジェクトを番号で選択すると規定の行動を取ります：</p>
+    <div class="example-box">1:立て札         → 読む
+2:パンの保存食   → 拾う
+3:ショートソード  → 拾う
+4:3体のゴブリン  → 攻撃する</div>
+    <p>規定以外の行動は各コマンドから実行できます（例：<code>A</code> コマンドで立て札を攻撃）。</p>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">ステータス表示について</div>
+    <p>状態異常がある場合、能力値の下に表示されます。悪い状態は<span style="color:#f5a623;">黄色字</span>、良い状態は<span style="color:#5b9bd5;">青字</span>で表示。多くの状態異常は <code>C</code> コマンドで全確認できます。</p>
+  </div>
+
+  <hr class="section-sep">
+
+  <div class="subsection">
+    <div class="subsection-title">クリーチャー</div>
+    <p>人間・ゴブリン・動物などの活動するオブジェクトです。</p>
+    <table class="cmd-table">
+      <tr><th>表示色</th><th>意味</th></tr>
+      <tr><td><span style="color:#f5a623;">黄色</span></td><td>あなたに気づいていない敵対的クリーチャー</td></tr>
+      <tr><td><span style="color:#e94560;">赤色</span></td><td>あなたに気づいている敵対的クリーチャー。ターン経過ごとに攻撃してくる</td></tr>
+      <tr><td><span style="color:#5b9bd5;">青色</span></td><td>友好的クリーチャー。選択すると話しかける</td></tr>
+    </table>
+    <div class="note">「友好的」とは今すぐ襲って喰らおうとする様子ではない、という程度の意味です。あなたの良き友人とは限りません！</div>
+    <p>友好的クリーチャーに依頼（クエスト）がある場合、話しかけると「依頼を聞く」が表示されます。引き受けた依頼は <code>Q</code> コマンドでいつでも再確認できます。</p>
+    <div class="warn">大抵の依頼には期限があり、決められたターン数以内に達成しないと失敗・報酬なしとなります。</div>
+  </div>
+
+  <hr class="section-sep">
+
+  <div class="subsection">
+    <div class="subsection-title">ミニマップと移動</div>
+    <p>右下のミニマップには訪れた部屋が青い四角で表示されます（地上は最初から全探索済み）。</p>
+
+    <table class="cmd-table" style="margin-bottom:14px;">
+      <tr><th>ミニマップ表示</th><th>意味</th></tr>
+      <tr><td>青/黄の枠の部屋</td><td>個別に名前がある「特別な部屋」。青枠は商店など比較的安全な場所。</td></tr>
+      <tr><td>左上隅の明るい青◼</td><td>上り階段</td></tr>
+      <tr><td>左下隅の濃い青◼</td><td>下り階段</td></tr>
+      <tr><td>左下隅の赤◼</td><td>特殊フロアへの入口（特別な危険あり）</td></tr>
+    </table>
+
+    <p>出口は方向矢印で表示されます：</p>
+    <div class="example-box">↑:北の出口   ←:西の出口
+↓:南の出口   →:東の扉</div>
+
+    <table class="cmd-table" style="margin-top:10px;">
+      <tr><th>扉の色</th><th>意味</th></tr>
+      <tr><td><span style="color:#e0e0e0;">白</span>（ミニマップ：青）</td><td>鍵がかかっていない扉</td></tr>
+      <tr><td><span style="color:#e94560;">赤</span></td><td>鍵がかかっている扉。<code>u</code>コマンドで開錠トライ可。</td></tr>
+      <tr><td><span style="color:#f5a623;">黄色</span></td><td>鍵がかかっているか不明。選択すると確認（1ターン消費）。<code>u</code>コマンドで開錠トライ可。</td></tr>
+    </table>
+
+    <div class="note">移動は <code>h</code>/<code>j</code>/<code>k</code>/<code>l</code> キーでも行えます（それぞれ ←/↓/↑/→ と同じ）。</div>
+    <p>階段がある場合、出口表示の下に <code>&lt;:上り階段</code> または <code>&gt;:下り階段</code> が表示されます。<br>
+    その下の「地面上」には地面に落ちているアイテムが表示され、クリックで拾えます。<code>g</code> コマンドで一覧表示も可。</p>
+  </div>
+</section>
+
+
+<!-- ===== SECTION 4 ===== -->
+<section class="section" id="s4">
+  <div class="section-header">
+    <div class="section-num">4</div>
+    <div class="section-title">戦闘画面と戦闘</div>
+  </div>
+
+  <p>敵対的なクリーチャーを選択すると戦闘画面に移行します。</p>
+
+  <div class="example-box">　　　　　技量　体力
+1:ゴブリン　5　　5
+2:ゴブリン　4　　6
+3:ゴブリン　5　　4</div>
+
+  <p>クリーチャーを選択するとそのクリーチャーを攻撃します。</p>
+
+  <div class="subsection">
+    <div class="subsection-title">戦闘の基本ルール</div>
+    <ul style="margin-left:20px; color:var(--text-dim); font-size:0.9em; line-height:2;">
+      <li>攻撃命中判定：あなたの技量値、クリーチャーの技量値、武器性能、対応スキルレベル（未修得はLv.0）＋乱数。</li>
+      <li>原則1回攻撃するとクリーチャーも1回反撃。素早い/鈍いクリーチャーはこの限りではない。</li>
+      <li>素手で戦うと攻撃・防御の両方に大幅なペナルティ（「格闘術」スキルで緩和）。</li>
+      <li>全クリーチャーを倒すか <kbd>Esc</kbd> キーでメイン画面に戻れる。</li>
+    </ul>
+    <div class="warn">素手での戦闘は攻撃だけでなく防御にも大幅なペナルティがかかります。武器は必ず装備しましょう！</div>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">戦闘画面専用コマンド</div>
+    <table class="cmd-table">
+      <tr><th>コマンド</th><th>説明</th></tr>
+      <tr><td><span class="key">b</span></td><td>防御に専念。攻撃が当たりにくく、受けるダメージを軽減（メイン画面では「警戒する」）</td></tr>
+      <tr><td><span class="key">A</span></td><td>大振り攻撃。成功すれば通常より大きなダメージ。運勢値を1消費（メイン画面では「攻撃する」）</td></tr>
+    </table>
+    <div class="note"><code>R</code>（休憩）、<code>M</code>（呪文を覚える）など一部のコマンドは戦闘画面では使用不可です。</div>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">オートターゲット</div>
+    <p>以下の特殊コマンドで自動的に対象を選んで攻撃できます。</p>
+    <div class="auto-target">
+      <div class="k">-</div><div class="v">最も体力の小さい敵をターゲット（体力0は対象外）</div>
+      <div class="k">+</div><div class="v">最も体力の大きい敵をターゲット</div>
+      <div class="k">/</div><div class="v">最も技量の小さい敵をターゲット</div>
+      <div class="k">*</div><div class="v">最も技量の大きい敵をターゲット</div>
+    </div>
+    <p style="margin-top:8px; font-size:0.88em; color:var(--text-dim);">複数対象がいる場合は番号が最も小さい（上側の）クリーチャーを攻撃。呪文やワンド使用時の対象選択にも有効。</p>
+    <div class="warn">連打しすぎて重要なメッセージや体力低下を見逃さないよう注意！流れたメッセージは <code>L</code> コマンドで見返せます。</div>
+  </div>
+</section>
+
+
+<!-- ===== SECTION 5 ===== -->
+<section class="section" id="s5">
+  <div class="section-header">
+    <div class="section-num">5</div>
+    <div class="section-title">呪文</div>
+  </div>
+
+  <p>キャラが呪文を覚えている場合、<code>m</code> コマンドで呪文を唱えられます。覚えている呪文の一覧から選択すると詠唱を開始します（一部の呪文は対象選択が先）。</p>
+
+  <div class="subsection">
+    <div class="subsection-title">呪文のパラメータ</div>
+    <div class="stat-grid">
+      <div class="stat-card"><h4>レベル</h4><p>呪文の強さ。記憶容量もこの値で消費される。</p></div>
+      <div class="stat-card"><h4>詠唱時間</h4><p>呪文を唱えるのに必要なターン数。2以上の場合、詠唱中にダメージを受けると中断される。</p></div>
+      <div class="stat-card"><h4>消費体力</h4><p>詠唱完了時に消費する体力。0以下になると死亡するので注意！</p></div>
+      <div class="stat-card"><h4>系統</h4><p>対応スキルを修得していると詠唱時間・消費体力が軽減され、効果・範囲・持続時間が増大。</p></div>
+    </div>
+    <div class="note">重たい鎧を装備している場合、（鎧の基本AC−3）だけ詠唱時間が増加します。例：チェインメイル（基本AC=5）→詠唱時間+2。</div>
+    <p><code>m</code> → <kbd>Enter</kbd> で呪文一覧のレベル・詠唱時間・消費体力・系統を確認できます。一覧表示中に <code>?</code> キーから呪文を選ぶとその説明を見ることができます。</p>
+  </div>
+
+  <hr class="section-sep">
+
+  <div class="subsection">
+    <div class="subsection-title">呪文の記憶</div>
+    <p><code>M</code> コマンドで持ち物の呪文書を選択すると、記載されている呪文の一覧が表示されます。覚えたい呪文を選択すると記憶を開始します。</p>
+    <div class="warn">記憶には長い時間（ターン）を要します。記憶中に敵が来た場合などは中断され、最初からやり直す必要があります。</div>
+
+    <div class="subsection-title" style="margin-top:16px;">記憶容量について</div>
+    <p>キャラが記憶できる呪文の量は<strong>記憶容量</strong>として表されます。記憶容量は「記憶可能な呪文レベルの総計」です。</p>
+    <div class="example-box">例：記憶容量 4 の場合
+・Lv1呪文 × 1  + Lv3呪文 × 1（1+3=4）
+・Lv2呪文 × 2（2+2=4）</div>
+    <p>現在の残り記憶容量は <code>M</code> コマンド実行時に画面上部に表示されます。レベルアップや「呪文詠唱」スキルで増加できます。</p>
+  </div>
+
+  <hr class="section-sep">
+
+  <div class="subsection">
+    <div class="subsection-title">クリーチャーの呪文に注意</div>
+    <p>呪文を唱えるクリーチャーの呪文もあなたのものと同等以上の威力を持ちます。クリーチャーの詠唱中にダメージを与えれば詠唱を中断させることができます。</p>
+  </div>
+</section>
+
+
+<!-- ===== SECTION 6 ===== -->
+<section class="section" id="s6">
+  <div class="section-header">
+    <div class="section-num">6</div>
+    <div class="section-title">アイテム</div>
+  </div>
+
+  <p>手に入れたアイテムは背負い袋に収められます。全てのアイテムには重さと大きさがあり、持ち運べる限界を超えて所持することはできません。</p>
+
+  <div class="subsection">
+    <div class="subsection-title">持ち物の表示（<code>I</code> コマンド）</div>
+    <p><code>I</code> コマンドで所持アイテムの一覧（種別・数量・重量・大きさ）を確認できます。ページ送りは <code>←</code>/<code>→</code> キー。アイテム選択で詳細情報を表示。</p>
+    <div class="note">一覧の「名前」「種別」「重さ」「大きさ」をクリックするとソート可能（最初は降順、再クリックで昇順⇔降順切替）。「名前」はシンボル文字順でソート。</div>
+    <p>一覧上部には金貨枚数と <strong>重量:***/****　容量:****/****</strong> の表示があります。例：<code>重量:250/3000</code> は現在の総重量250、持ち運べる限界3000を示します。</p>
+    <div class="note">重量/容量限界とは別にアイテムは52種類（a〜z、A〜Z）までしか所持できません。</div>
+
+    <table class="cmd-table" style="margin-top:12px;">
+      <tr><th>限界の上昇方法</th><th></th></tr>
+      <tr><td>重量限界</td><td>レベルアップ・「剛力」スキル・「剛力の指輪」などの魔法アイテム装備</td></tr>
+      <tr><td>容量限界</td><td>「収納術」スキルのみ</td></tr>
+    </table>
+  </div>
+
+  <hr class="section-sep">
+
+  <div class="subsection">
+    <div class="subsection-title">アイテムの鑑定</div>
+    <p>薬・巻物・指輪などは初めて発見した時点では「赤い薬」「銅の指輪」のような不確定名が付いており、効果は不明です。鑑定を行うことで確定名に変わり、効果を確認できるようになります。</p>
+    <table class="cmd-table">
+      <tr><th>鑑定方法</th><th>説明</th></tr>
+      <tr><td>鑑定の巻物</td><td>持ち物・周囲のアイテムから1つを選択して鑑定</td></tr>
+      <tr><td>商店</td><td>鑑定を依頼可能</td></tr>
+      <tr><td>呪文</td><td>鑑定呪文で鑑定可能</td></tr>
+      <tr><td>使用・装備</td><td>アイテムによっては使用/装備で鑑定される場合あり</td></tr>
+    </table>
+  </div>
+
+  <hr class="section-sep">
+
+  <div class="subsection">
+    <div class="subsection-title">アイテムの種別</div>
+    <div class="item-grid">
+      <div class="item-card">
+        <h4>⚔ 武器（短剣・長剣・鈍器・斧・槍・杖）</h4>
+        <p><code>e</code>コマンドで装備。素手では攻防に大幅ペナルティ。武器には命中率・ダメージへの修正値（+x, +y）があり、鑑定で確認可能。杖のみ修正値なし（呪文詠唱でボーナス）。両手武器・片手/両手武器の区別あり（<code>I</code>コマンドの種別欄で確認）。両手持ちはダメージにボーナス（杖を除く）。</p>
+      </div>
+      <div class="item-card">
+        <h4>🛡 防具（盾・鎧・兜・籠手・靴・外套）</h4>
+        <p><code>e</code>コマンドで装備。AC（アーマークラス）が高いほど防御効果大。修正値は[+x]で表示。<code>e</code>/<code>C</code>コマンドで総AC値を確認可能（盾のACは別表示）。</p>
+      </div>
+      <div class="item-card">
+        <h4>💍 指輪</h4>
+        <p><code>e</code>コマンドで装備（右手・左手に各1つ）。魔法の効果を発揮（良い効果とは限らない）。修正値を持つ指輪は装備で鑑定（アーティファクトを除く）。</p>
+      </div>
+      <div class="item-card">
+        <h4>📿 護符</h4>
+        <p>首に1つだけ装備可能。指輪と同様の特徴。より希少で珍しい魔法が込められている傾向。修正値を持つ護符は装備で鑑定（アーティファクトを除く）。</p>
+      </div>
+      <div class="item-card">
+        <h4>⚠ 呪われた装備品</h4>
+        <p>稀に呪われた装備品が存在。多くの場合悪い効果を持ち、装備すると解呪するまで外せない。<span style="color:#f5a623;">黄色</span>＝呪われている可能性あり、<span style="color:#e94560;">ピンク</span>＝呪われていることが判明。解呪は解呪の巻物などで可能。</p>
+      </div>
+      <div class="item-card">
+        <h4>☆ アーティファクト</h4>
+        <p>ごく稀に見つかる伝説の装備品。固有の名前を持ち☆または★の記号が付く。強力な魔法が込められている（良い効果とは限らない）。装備だけでは鑑定されず、鑑定の巻物などが必要。</p>
+      </div>
+      <div class="item-card">
+        <h4>🍞 食物</h4>
+        <p>生存に非常に重要。ターン経過で徐々に空腹になり、飢餓状態では一定ターンごとに体力を失う。<code>E</code>コマンドで食べて空腹を満たす（体力も少し回復）。</p>
+      </div>
+      <div class="item-card">
+        <h4>🧪 薬</h4>
+        <p>瓶入りの水薬。<code>q</code>コマンドで飲んで効果発揮。飲めば鑑定される。危険な効果の薬もあるので注意。</p>
+      </div>
+      <div class="item-card">
+        <h4>📜 巻物</h4>
+        <p>魔法の呪文が記された巻物。<code>r</code>コマンドで読んで効果発揮。効果が発揮された場合に鑑定される。一度読むと消滅。</p>
+      </div>
+      <div class="item-card">
+        <h4>📚 本（呪文書）</h4>
+        <p><code>r</code>コマンドで読むと鑑定。以後 <code>M</code>コマンドで呪文を記憶可能。鑑定済みの呪文書を <code>r</code>で読むと記載呪文の説明を確認可能。</p>
+      </div>
+      <div class="item-card">
+        <h4>🪄 ワンド</h4>
+        <p><code>z</code>コマンドで振って効果発揮。自分に向けるときは <code>@</code>キー。エネルギーは有限（充填数）。振って効果が発揮されると鑑定（充填数は別途鑑定必要）。<code>魔力充填の巻物</code>で充填数を増加可能。</p>
+      </div>
+      <div class="item-card">
+        <h4>💰 金貨</h4>
+        <p>この世界の通貨。店でのアイテム購入など各種取引に使用。希少なので計画的に！（店にアイテムを売ることはできません）</p>
+      </div>
+      <div class="item-card">
+        <h4>🔑 鍵</h4>
+        <p>施錠された扉を開く鍵。魔法の鍵は通常の扉をすぐに開錠可能（<code>p</code>コマンド）。使用ごとに1個消失。</p>
+      </div>
+      <div class="item-card">
+        <h4>📦 その他</h4>
+        <p>上記に当てはまらないアイテム。重要なものから価値のないものまで様々。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ===== SECTION 7 ===== -->
+<section class="section" id="s7">
+  <div class="section-header">
+    <div class="section-num">7</div>
+    <div class="section-title">オブジェクト</div>
+  </div>
+
+  <p>迷宮にはアイテムやクリーチャー以外にも関与できる対象（オブジェクト）が多く登場します。</p>
+
+  <div class="subsection">
+    <div class="subsection-title">立て札</div>
+    <p>選択することでメッセージを読めます。意味のないメッセージや嘘が書かれていることもあるので注意。立て札・掲示板など複数の種類があります。</p>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">箱</div>
+    <p>アイテムが納められた箱（木の箱・鉄の箱など）。大抵は罠が仕掛けられています。</p>
+    <ol style="margin-left:20px; color:var(--text-dim); font-size:0.9em; line-height:2.2;">
+      <li>箱を選択 → 罠の識別を行う（結果：例「木の箱(弓矢?)」）</li>
+      <li>再び選択 → 解除する罠の種類が表示される</li>
+      <li>正しい罠を選択 → 解除にトライ</li>
+    </ol>
+    <div class="warn">間違った罠を選択した場合、仕掛けられていた罠が発動します。</div>
+    <p>罠解除（成否に関わらず）後は自由に箱を開けられます。箱にアイテムを入れることも可能（<code>d</code>キー）。</p>
+    <div class="note">箱に入れたアイテムはクリーチャーに拾われたり食べられたりしなくなります。ただし一部のクリーチャーはあなたが見ていない時に箱を開けることがあります。</div>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">部屋の罠</div>
+    <p>罠のある部屋に入ると「壁に違和感を感じた」などのメッセージが表示されます。発見されるまでオブジェクト一覧に表示されません。</p>
+    <p><code>b</code> コマンドで罠を発見できます（確率は運勢値・「解除」スキルで決定）。発見後は選択すれば確実に解除可能（数ターン要する場合あり）。</p>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">石碑 / 石像</div>
+    <p>触れる（選択する）ことで魔法的な効果を発揮します。効果は良いものとは限らず、一度きりの場合もあります。触れることで鑑定され、以後は確定名で表記されます。</p>
+  </div>
+
+  <div class="note">名前付きの特別な部屋では、オブジェクトをいきなり調べる前に部屋の主に話しかけることを推奨します。そうしないと主を怒らせる可能性があります！</div>
+</section>
+
+
+<!-- ===== SECTION 8 ===== -->
+<section class="section" id="s8">
+  <div class="section-header">
+    <div class="section-num">8</div>
+    <div class="section-title">コマンド</div>
+  </div>
+
+  <p>基本的にアルファベット1文字のキー入力で実行できます。コマンドリスト・コマンドパレットからも実行可能です。</p>
+
+  <div class="guide-grid" style="margin-bottom:20px;">
+    <div class="guide-card">
+      <h4>コマンドリスト（<code>c</code>）</h4>
+      <p>画面右側にコマンドリストを表示。↑↓でカーソル移動、Enterで実行。→←でページ切替（1ページ目：小文字、2ページ目：大文字・特殊）。</p>
+    </div>
+    <div class="guide-card">
+      <h4>コマンドパレット（<code>P</code>）</h4>
+      <p>アイコンボタンの集まり。<code>a</code> / <code>e</code> / <code>d</code> / <code>i</code> / <code>I</code> / <code>b</code> / <code>v</code> / <code>m</code> / <code>C</code> / <code>R</code> の10種を実行可能。</p>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">小文字コマンド一覧</div>
+    <table class="cmd-table">
+      <tr><th>キー</th><th>コマンド名</th><th>説明</th></tr>
+      <tr><td><span class="key">a</span></td><td>能力の使用</td><td>突然変異・魔法装備品などで得ている能力を使用。コスト（体力・運勢・栄養のいずれか）が必要。</td></tr>
+      <tr><td><span class="key">b</span></td><td>警戒する</td><td>周囲を警戒して隠し罠・扉を確率で発見。隠密能力上昇。戦闘画面では「防御する」に変更（被攻撃軽減）。</td></tr>
+      <tr><td><span class="key">c</span></td><td>コマンドリスト</td><td>コマンドリストを表示。</td></tr>
+      <tr><td><span class="key">d</span></td><td>落とす（個数指定）</td><td>持ち物を地面に落とす。2個以上の場合は落とす数量を入力（全数は所持数以上か非数字を入力）。</td></tr>
+      <tr><td><span class="key">e</span></td><td>装備する</td><td>アイテムを装備/解除。既装備は自動的に外れる。装備・解除ごとにターン消費。</td></tr>
+      <tr><td><span class="key">g</span> / <span class="key">^</span></td><td>地面上のアイテム表示</td><td>地面にあるアイテムの一覧を表示。選択で拾える（箱は開ける動作）。ターン消費なし（拾う時は消費）。</td></tr>
+      <tr><td><span class="key">h</span>/<span class="key">j</span>/<span class="key">k</span>/<span class="key">l</span></td><td>移動</td><td>それぞれ ←/↓/↑/→ キーと同じ効果。</td></tr>
+      <tr><td><span class="key">i</span></td><td>アイテムを使う</td><td>持ち物のアイテムを使用。食物→食べる、薬→飲む、巻物→読む など。</td></tr>
+      <tr><td><span class="key">m</span></td><td>呪文を唱える</td><td>覚えている呪文一覧を表示して選択し詠唱。詠唱に数ターン要する場合あり。</td></tr>
+      <tr><td><span class="key">p</span></td><td>魔法の鍵を使う</td><td>魔法の鍵を使って方向キーで選んだ扉を開錠。消耗品。メイン画面でのみ実行可能。</td></tr>
+      <tr><td><span class="key">q</span></td><td>飲む</td><td>薬などを飲む。危険な薬もあるので注意。</td></tr>
+      <tr><td><span class="key">r</span></td><td>読む</td><td>巻物・呪文書などを読む。呪文書は読むと鑑定されMコマンドで記憶可能に。</td></tr>
+      <tr><td><span class="key">s</span></td><td>盗む</td><td>クリーチャーの持ち物や店の商品を盗む。成功率は運勢値と偸盗術スキルで決定。</td></tr>
+      <tr><td><span class="key">t</span></td><td>投げる</td><td>アイテムを選択し目標に投げる。適切なアイテム（ダガーなど）なら命中でダメージ。</td></tr>
+      <tr><td><span class="key">u</span></td><td>開錠/解除する</td><td>扉の開錠・箱の罠解除。成功率は運勢値と解除スキルで決定。メイン画面でのみ実行可能。<br><small style="color:var(--text-dim);">※ u + 方向キーで壁の隠し扉を確実に発見できます。</small></td></tr>
+      <tr><td><span class="key">v</span></td><td>見る</td><td>対象を観察。クリーチャーなら技量値・体力値・状態異常・装備武器を確認可能。ターン消費なし。</td></tr>
+      <tr><td><span class="key">w</span></td><td>手に持つ</td><td>対象を手に持つ。袋に入らない大きなアイテムも持ち歩き可能。<code>@</code>キーで袋にしまう。<br><small style="color:var(--text-dim);">※ 手に持っているアイテムは装備武器より優先して使われます。</small></td></tr>
+      <tr><td><span class="key">z</span></td><td>ワンドを振る</td><td>ワンドを選択し目標に向けて振る。自分に向けるときは<code>@</code>。充填数に限りあり。</td></tr>
+    </table>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">大文字・特殊コマンド一覧</div>
+    <table class="cmd-table">
+      <tr><th>キー</th><th>コマンド名</th><th>説明</th></tr>
+      <tr><td><span class="key">A</span></td><td>攻撃する</td><td>対象を攻撃。友好的クリーチャーやクリーチャー以外も攻撃可能。戦闘画面では「大振りする」（成功で大ダメージ、運勢値1消費）。</td></tr>
+      <tr><td><span class="key">C</span></td><td>キャラクター情報</td><td>キャラ情報を表示（←→でページ送り）。Ctrl+Pでキャラ情報ファイルをsaveフォルダに出力。ターン消費なし。</td></tr>
+      <tr><td><span class="key">D</span></td><td>落とす（全数）</td><td>持ち物を全数落とす。<code>d</code>とほぼ同じだが常に全数落とす。</td></tr>
+      <tr><td><span class="key">E</span></td><td>食事する</td><td>食物を食べる。満腹時は食べられない。食事で満腹度と体力が回復。</td></tr>
+      <tr><td><span class="key">I</span></td><td>持ち物一覧</td><td>所持アイテムの一覧を表示。アイテム選択で詳細情報確認。ターン消費なし。</td></tr>
+      <tr><td><span class="key">L</span></td><td>バックログ</td><td>過去のメッセージを遡って表示（最大30ページ/390行）。Ctrl+Pでログファイルをsaveフォルダに出力。ターン消費なし。</td></tr>
+      <tr><td><span class="key">M</span></td><td>呪文を記憶する</td><td>呪文書から呪文を記憶。メイン画面でのみ実行可能。詳細は5.呪文を参照。</td></tr>
+      <tr><td><span class="key">O</span></td><td>設定画面</td><td>画面スケール・音量・色の設定・カーソル表示などを変更可能。<br><small style="color:var(--text-dim);">設定リセット：saveフォルダのsetting.iniを削除して再起動。</small></td></tr>
+      <tr><td><span class="key">P</span></td><td>コマンドパレット</td><td>コマンドパレットの表示/非表示を切り替え。</td></tr>
+      <tr><td><span class="key">Q</span></td><td>クエスト一覧</td><td>引き受けているクエストの一覧を表示。選択で詳細確認。<code>-</code>で削除（削除すると失敗扱い）。ターン消費なし。</td></tr>
+      <tr><td><span class="key">R</span></td><td>休憩する</td><td>20ターン経過させ体力・技量・運勢を一定量回復。敵対クリーチャーが近くにいる場合や飢餓状態では不可。危険な状況が発生すると中断。メイン画面でのみ実行可能。</td></tr>
+      <tr><td><span class="key">S</span></td><td>スキル一覧</td><td>修得スキルの一覧を表示。選択でそのスキルの情報確認。ターン消費なし。</td></tr>
+      <tr><td><span class="key">T</span></td><td>タイトルに戻る</td><td>冒険を中断してタイトルへ。セーブするか確認あり（セーブせずに戻ることは不可）。</td></tr>
+      <tr><td><span class="key">U</span></td><td>レベルアップ</td><td>経験値が一定値に達すると「Up」が表示される。このコマンドまたは「Up」クリックでレベルアップ。能力値上昇、スキル修得・レベルアップが可能。ターン消費なし。メイン画面でのみ実行可能。</td></tr>
+      <tr><td><span class="key">@</span></td><td>突然変異一覧</td><td>得ている突然変異の一覧を表示。ターン消費なし。</td></tr>
+      <tr><td><span class="key">=</span></td><td>マクロの登録</td><td>マクロの登録を行う。F1〜F12キーに登録。再度 <code>=</code>キーでmacro.txtを読み込み可能。ターン消費なし。</td></tr>
+      <tr><td><span class="key">?</span></td><td>コマンド一覧</td><td>コマンド一覧を表示。ターン消費なし。</td></tr>
+      <tr><td><span class="key">Ctrl+D</span></td><td>ウィンドウの最小化</td><td>即時に画面を最小化。ターン消費なし。</td></tr>
+    </table>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">〜 コマンド一覧（クイックリファレンス）〜</div>
+    <div class="example-box">a: 能力の使用              A: 攻撃する（戦闘：大振り）
+b: 警戒する（戦闘：防御）  C: キャラクター情報
+c: コマンドリスト          D: 落とす（全数）
+d: 落とす（個数指定）      E: 食事する
+e: 装備する               I: 持ち物一覧
+g: 地面上のアイテム表示    L: バックログ
+i: アイテムを使う          M: 呪文を記憶する
+m: 呪文を唱える            O: 設定画面
+p: 魔法の鍵を使う          P: コマンドパレット
+q: 飲む                    Q: クエスト一覧
+r: 読む                    R: 休憩する
+s: 盗む                    S: スキル一覧
+t: 投げる                  T: タイトルに戻る
+u: 開錠/解除する           U: レベルアップ
+v: 見る                    @: 突然変異一覧
+w: 手に持つ                =: マクロの登録
+z: ワンドを振る             ?: コマンド一覧
+h/j/k/l: ←/↓/↑/→      Ctrl+D: 最小化</div>
+  </div>
+</section>
+
+
+<!-- ===== SECTION 9 ===== -->
+<section class="section" id="s9">
+  <div class="section-header">
+    <div class="section-num">9</div>
+    <div class="section-title">マクロ</div>
+  </div>
+
+  <p>マクロとは複数のコマンドをキー1つで実行する機能です。アルファベット（a-z/A-Z）またはF1〜F12キーに登録できます。</p>
+
+  <div class="example-box" style="margin-bottom:8px;"><span style="color:var(--text-dim);">例：「魔法の矢」を唱えるマクロ</span>
+通常：<span style="color:#5b9bd5;">m</span> → <span style="color:#5b9bd5;">a</span>（2回入力）
+マクロ登録後：<span style="color:#f5a623;">F1</span> キー1回で実行</div>
+
+  <hr class="section-sep">
+
+  <div class="subsection">
+    <div class="subsection-title">macro.txt の編集</div>
+    <p>マクロはゲームのインストールフォルダの <code>save</code> フォルダ内の <code>macro.txt</code> を編集することで設定できます（マクロは全キャラ共通）。ゲーム起動時に読み込まれます。</p>
+
+    <div class="macro-example">
+<span class="comment"># macro.txt 編集例</span>
+<span class="key-def">a</span><span style="color:var(--text);">:</span><span class="value">ma</span>      <span class="comment"># 'a'キー → aのシンボルの呪文を唱える</span>
+<span class="key-def">F1</span><span style="color:var(--text);">:</span><span class="value">Da!b</span>    <span class="comment"># F1キー → aとbのアイテムを全て落とす</span></div>
+
+    <table class="cmd-table" style="margin-top:12px;">
+      <tr><th>特殊キーの記述方法</th><th></th></tr>
+      <tr><td>Enter キー</td><td><code>~</code>（チルダ）または <code>{ENTER}</code></td></tr>
+      <tr><td>Esc キー</td><td><code>{ESC}</code></td></tr>
+      <tr><td>← キー</td><td><code>{LEFT}</code>（または <code>h</code>）</td></tr>
+      <tr><td>↑ キー</td><td><code>{UP}</code>（または <code>k</code>）</td></tr>
+      <tr><td>↓ キー</td><td><code>{DOWN}</code>（または <code>j</code>）</td></tr>
+      <tr><td>→ キー</td><td><code>{RIGHT}</code>（または <code>l</code>）</td></tr>
+    </table>
+    <div class="note">マクロ内にマクロ（F1〜F12キー）を含めることはできません（無限ループ防止）。マクロ実行時のメッセージは1画面分のみ表示されますが、ログには全て記録されます（<code>L</code>コマンドで確認可）。</div>
+  </div>
+
+  <hr class="section-sep">
+
+  <div class="subsection">
+    <div class="subsection-title"><code>!</code> コマンドと中断オプション</div>
+    <p><code>!</code> はマクロ実行時専用のコマンドで、設定した中断条件に当てはまったときにマクロを中断します。</p>
+
+    <div class="macro-example">
+<span class="section-label">-----中断オプション-----</span>
+<span class="comment">①</span> <span class="key-def">'!'コマンドで周囲に敵がいるときに中断</span><span style="color:var(--text);">:</span><span class="value">いいえ</span>
+<span class="comment">②</span> <span class="key-def">'!'コマンドで体力が5以下のときに中断</span><span style="color:var(--text);">:</span><span class="value">いいえ</span>
+<span class="key-def">'!'コマンドで①かつ②のときに中断</span><span style="color:var(--text);">:</span><span class="value">はい</span>
+
+<span class="section-label">-----いつでも中断オプション-----</span>
+<span class="comment">③</span> <span class="key-def">いつでも周囲に敵がいるときは中断</span><span style="color:var(--text);">:</span><span class="value">いいえ</span>
+<span class="comment">④</span> <span class="key-def">いつでも体力が5以下のときは中断</span><span style="color:var(--text);">:</span><span class="value">いいえ</span>
+<span class="key-def">いつでも③かつ④のときは中断</span><span style="color:var(--text);">:</span><span class="value">いいえ</span>
+<span class="key-def">いつでも麻痺したときは中断</span><span style="color:var(--text);">:</span><span class="value">はい</span></div>
+
+    <p style="font-size:0.88em; color:var(--text-dim); margin-top:8px;">「：はい」を「はい」以外に変更するとその条件は無効になります。「体力がx以下のとき」のxの数値を変更すると基準値を変更できます。</p>
+  </div>
+
+  <hr class="section-sep">
+
+  <div class="subsection">
+    <div class="subsection-title"><code>=</code> コマンドでのゲーム中登録</div>
+    <p>ゲーム中に <code>=</code> キーを押すと登録するキー（F1〜F12）を選択するプロンプトが表示されます。マクロをキー入力し、F1キーで確定すると登録（macro.txt も更新）されます。</p>
+    <p>また、<code>=</code> → さらに <code>=</code> キーで macro.txt を再読み込みして登録内容を即反映できます。</p>
+    <div class="note">マクロを初期状態に戻したい場合は、saveフォルダから macro.txt を削除してゲームを再起動してください。初期状態のファイルが再生成されます。</div>
+  </div>
+</section>
+
+
+</main>
+</div><!-- /wrapper -->
+
+<script>
+// Sidebar active link on scroll
+const sections = document.querySelectorAll('.section');
+const navLinks = document.querySelectorAll('nav a');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navLinks.forEach(a => a.classList.remove('active'));
+      const active = document.querySelector(`nav a[href="#${e.target.id}"]`);
+      if (active) active.classList.add('active');
+    }
+  });
+}, { threshold: 0.2, rootMargin: '-60px 0px -60% 0px' });
+sections.forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>
