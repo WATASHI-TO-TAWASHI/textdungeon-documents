@@ -674,11 +674,11 @@
 
   <p>キャラ作成後に表示されるゲーム進行のメイン画面です。画面は4つの領域に分かれます。</p>
 
-  <div class="guide-grid" style="margin-bottom:16px;">
-    <div class="guide-card"><h4>左上：オブジェクト表示部</h4><p>その場であなたが関与できる項目（オブジェクト）の一覧が番号付きで表示される。</p></div>
-    <div class="guide-card"><h4>右上：ステータス表示部</h4><p>通称・名前・レベル・経験値・各能力値（現在値/最大値）・状態異常などが表示される。</p></div>
-    <div class="guide-card"><h4>左下：メッセージ表示部</h4><p>行動結果のメッセージが表示される。「→続く」が出たらクリックまたはキー入力で次へ。</p></div>
-    <div class="guide-card"><h4>右下：ミニマップ表示部</h4><p>訪れた部屋が青い四角で表示される。白い点が現在地。</p></div>
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:16px 0; max-width:600px;">
+    <div class="guide-card" style="border-top:3px solid var(--gold);"><h4>↖ 左上：オブジェクト表示部</h4><p>その場であなたが関与できる項目（オブジェクト）の一覧が番号付きで表示される。</p></div>
+    <div class="guide-card" style="border-top:3px solid var(--accent);"><h4>↗ 右上：ステータス表示部</h4><p>通称・名前・レベル・経験値・各能力値（現在値/最大値）・状態異常などが表示される。</p></div>
+    <div class="guide-card" style="border-top:3px solid var(--blue);"><h4>↙ 左下：メッセージ表示部</h4><p>行動結果のメッセージが表示される。「→続く」が出たらクリックまたはキー入力で次へ。</p></div>
+    <div class="guide-card" style="border-top:3px solid var(--green);"><h4>↘ 右下：ミニマップ表示部</h4><p>訪れた部屋が青い四角で表示される。白い点が現在地。</p></div>
   </div>
 
   <div class="subsection">

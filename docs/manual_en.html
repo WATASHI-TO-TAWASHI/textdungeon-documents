@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Text Dungeon — Manual</title>
+<style>
+  :root {
+    --bg: #1a1a2e;
+    --surface: #16213e;
+    --surface2: #0f3460;
+    --accent: #e94560;
+    --gold: #f5a623;
+    --text: #e0e0e0;
+    --text-dim: #9a9ab0;
+    --border: #2a2a4a;
+    --code-bg: #0d0d1a;
+    --green: #4caf82;
+    --blue: #5b9bd5;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Calibri, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.8;
+    font-size: 15px;
+  }
+  header {
+    background: linear-gradient(135deg, #0d0d1a 0%, #1a1a3a 50%, #0d1a2e 100%);
+    border-bottom: 2px solid var(--accent);
+    padding: 32px 24px 24px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at center, rgba(233,69,96,0.08) 0%, transparent 70%);
+  }
+  header h1 { font-size: 2.2em; font-weight: 700; letter-spacing: 0.1em; color: var(--gold); text-shadow: 0 0 20px rgba(245,166,35,0.4); position: relative; }
+  header p { margin-top: 8px; color: var(--text-dim); font-size: 0.9em; position: relative; }
+  .wrapper { display: flex; max-width: 1200px; margin: 0 auto; }
+  nav {
+    width: 240px; flex-shrink: 0;
+    position: sticky; top: 0; height: 100vh; overflow-y: auto;
+    background: var(--surface); border-right: 1px solid var(--border);
+    padding: 20px 0;
+  }
+  nav::-webkit-scrollbar { width: 4px; }
+  nav::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+  nav .nav-title { padding: 0 16px 12px; font-size: 0.75em; font-weight: 700; letter-spacing: 0.1em; color: var(--text-dim); text-transform: uppercase; border-bottom: 1px solid var(--border); margin-bottom: 8px; }
+  nav a { display: block; padding: 8px 16px; color: var(--text-dim); text-decoration: none; font-size: 0.88em; transition: all 0.15s; border-left: 3px solid transparent; }
+  nav a:hover { color: var(--text); background: rgba(255,255,255,0.04); border-left-color: var(--accent); }
+  nav a.active { color: var(--gold); border-left-color: var(--gold); background: rgba(245,166,35,0.06); }
+  nav a .num { display: inline-block; min-width: 22px; color: var(--accent); font-weight: 700; font-size: 0.85em; }
+  main { flex: 1; min-width: 0; padding: 32px 40px 60px; }
+  .section { margin-bottom: 56px; scroll-margin-top: 20px; }
+  .section-header { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+  .section-num { background: var(--accent); color: #fff; font-size: 0.8em; font-weight: 700; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 6px; flex-shrink: 0; }
+  .section-num.gold { background: var(--gold); color: #1a1a2e; }
+  .section-title { font-size: 1.4em; font-weight: 700; color: var(--text); }
+  .subsection { margin: 24px 0; }
+  .subsection-title { font-size: 1.05em; font-weight: 700; color: var(--gold); margin-bottom: 10px; padding-left: 12px; border-left: 3px solid var(--gold); }
+  p { margin-bottom: 10px; }
+  .guide-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; margin: 16px 0; }
+  .guide-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; }
+  .guide-card h4 { color: var(--gold); font-size: 0.95em; font-weight: 700; margin-bottom: 6px; }
+  .guide-card p { font-size: 0.88em; color: var(--text-dim); margin: 0; line-height: 1.6; }
+  .note { background: rgba(91,155,213,0.08); border: 1px solid rgba(91,155,213,0.3); border-left: 4px solid var(--blue); border-radius: 0 6px 6px 0; padding: 10px 14px; margin: 12px 0; font-size: 0.88em; color: #b8cfe8; }
+  .note::before { content: '※ '; font-weight: 700; color: var(--blue); }
+  .warn { background: rgba(245,166,35,0.07); border: 1px solid rgba(245,166,35,0.3); border-left: 4px solid var(--gold); border-radius: 0 6px 6px 0; padding: 10px 14px; margin: 12px 0; font-size: 0.88em; color: #e8d5a0; }
+  .warn::before { content: '⚠ '; font-weight: 700; }
+  .cmd-table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 0.9em; }
+  .cmd-table th { background: var(--surface2); color: var(--gold); padding: 8px 14px; text-align: left; font-weight: 700; border-bottom: 2px solid var(--accent); }
+  .cmd-table td { padding: 7px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .cmd-table tr:hover td { background: rgba(255,255,255,0.03); }
+  .cmd-table .key { font-family: 'Consolas','Courier New',monospace; background: var(--code-bg); border: 1px solid var(--border); border-radius: 4px; padding: 2px 7px; color: var(--green); font-size: 0.95em; white-space: nowrap; }
+  .example-box { background: var(--code-bg); border: 1px solid var(--border); border-radius: 6px; padding: 12px 16px; margin: 12px 0; font-family: 'Consolas','Courier New',monospace; font-size: 0.88em; color: var(--green); white-space: pre; line-height: 1.7; }
+  .stat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; margin: 16px 0; }
+  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; }
+  .stat-card h4 { color: var(--accent); font-size: 0.95em; font-weight: 700; margin-bottom: 6px; }
+  .stat-card p { font-size: 0.87em; color: var(--text-dim); margin: 0; line-height: 1.6; }
+  .skill-table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 0.88em; }
+  .skill-table th { background: var(--surface2); color: var(--text-dim); padding: 6px 12px; text-align: left; font-size: 0.85em; border-bottom: 1px solid var(--border); }
+  .skill-table td { padding: 6px 12px; border-bottom: 1px solid rgba(255,255,255,0.05); vertical-align: top; }
+  .skill-table tr:hover td { background: rgba(255,255,255,0.025); }
+  .item-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 14px; margin: 16px 0; }
+  .item-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; }
+  .item-card h4 { color: var(--green); font-size: 0.95em; font-weight: 700; margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+  .item-card p { font-size: 0.87em; color: var(--text-dim); margin: 0; line-height: 1.65; }
+  .toc-box { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px 24px; margin-bottom: 36px; }
+  .toc-box h3 { color: var(--gold); font-size: 0.9em; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 12px; }
+  .toc-box ol { list-style: none; column-count: 2; column-gap: 20px; }
+  .toc-box li { margin-bottom: 6px; }
+  .toc-box a { color: var(--text-dim); text-decoration: none; font-size: 0.92em; transition: color 0.15s; }
+  .toc-box a:hover { color: var(--gold); }
+  .toc-box .toc-num { color: var(--accent); font-weight: 700; margin-right: 6px; }
+  .auto-target { display: grid; grid-template-columns: auto 1fr; gap: 4px 16px; margin: 10px 0; font-size: 0.9em; }
+  .auto-target .k { font-family: monospace; background: var(--code-bg); border: 1px solid var(--border); border-radius: 4px; padding: 2px 8px; color: var(--gold); text-align: center; }
+  .auto-target .v { color: var(--text-dim); align-self: center; }
+  .macro-example { background: var(--code-bg); border: 1px solid var(--border); border-radius: 6px; padding: 14px 16px; margin: 12px 0; font-family: monospace; font-size: 0.9em; line-height: 1.8; }
+  .macro-example .comment { color: var(--text-dim); }
+  .macro-example .key-def { color: var(--green); }
+  .macro-example .value { color: var(--gold); }
+  .macro-example .section-label { color: var(--accent); font-weight: 700; }
+  hr.sep { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+  @media (max-width: 768px) {
+    nav { display: none; }
+    main { padding: 20px 16px 40px; }
+    .guide-grid, .stat-grid, .item-grid { grid-template-columns: 1fr; }
+    .toc-box ol { column-count: 1; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>⚔ Text Dungeon — Manual</h1>
+  <p>Complete guide to controls, mechanics, and commands</p>
+</header>
+
+<div class="wrapper">
+<nav id="sidenav">
+  <div class="nav-title">Contents</div>
+  <a href="#s0"><span class="num">0.</span> What is Text Dungeon?</a>
+  <a href="#s1"><span class="num">1.</span> Starting & Saving</a>
+  <a href="#s2"><span class="num">2.</span> Character Creation</a>
+  <a href="#s3"><span class="num">3.</span> Main Screen</a>
+  <a href="#s4"><span class="num">4.</span> Combat</a>
+  <a href="#s5"><span class="num">5.</span> Spells</a>
+  <a href="#s6"><span class="num">6.</span> Items</a>
+  <a href="#s7"><span class="num">7.</span> Objects</a>
+  <a href="#s8"><span class="num">8.</span> Commands</a>
+  <a href="#s9"><span class="num">9.</span> Macros</a>
+</nav>
+
+<main>
+
+<div class="toc-box">
+  <h3>📖 Table of Contents</h3>
+  <ol>
+    <li><a href="#s0"><span class="toc-num">0.</span> What is Text Dungeon?</a></li>
+    <li><a href="#s1"><span class="toc-num">1.</span> Starting, Resuming &amp; Saving</a></li>
+    <li><a href="#s2"><span class="toc-num">2.</span> Creating Your Character</a></li>
+    <li><a href="#s3"><span class="toc-num">3.</span> The Main Screen</a></li>
+    <li><a href="#s4"><span class="toc-num">4.</span> Combat Screen &amp; Combat</a></li>
+    <li><a href="#s5"><span class="toc-num">5.</span> Spells</a></li>
+    <li><a href="#s6"><span class="toc-num">6.</span> Items</a></li>
+    <li><a href="#s7"><span class="toc-num">7.</span> Objects</a></li>
+    <li><a href="#s8"><span class="toc-num">8.</span> Commands</a></li>
+    <li><a href="#s9"><span class="toc-num">9.</span> Macros</a></li>
+  </ol>
+</div>
+
+
+<!-- ===== SECTION 0 ===== -->
+<section class="section" id="s0">
+  <div class="section-header">
+    <div class="section-num gold">0</div>
+    <div class="section-title">What is Text Dungeon?</div>
+  </div>
+  <p>Text Dungeon is a text-adventure style RPG. Your goal is to descend deep into an underground labyrinth, defeat the evil sorcerer <strong>'Singor'</strong>, and recover the <strong>"Ring of Life"</strong> before returning to the surface.</p>
+</section>
+
+
+<!-- ===== SECTION 1 ===== -->
+<section class="section" id="s1">
+  <div class="section-header">
+    <div class="section-num">1</div>
+    <div class="section-title">Starting, Resuming &amp; Saving</div>
+  </div>
+  <p>Running <code>TextDungeon.exe</code> brings up the title screen with the following options:</p>
+  <div class="example-box">1. New Game
+2. Continue</div>
+  <p>Select an option by typing the shown number or clicking it. This input method applies throughout the game.</p>
+
+  <div class="subsection">
+    <div class="subsection-title">New Game</div>
+    <p>Select <strong>1</strong> to proceed to the character creation screen.</p>
+  </div>
+  <div class="subsection">
+    <div class="subsection-title">Continue</div>
+    <p>Select <strong>2</strong>, enter your character's name, and press <kbd>Enter</kbd>.</p>
+  </div>
+  <div class="subsection">
+    <div class="subsection-title">Saving &amp; Quitting</div>
+    <p>Close the application window (e.g. click the X button) to quit. A save file is created automatically. Use Continue to resume from the same point.</p>
+  </div>
+</section>
+
+
+<!-- ===== SECTION 2 ===== -->
+<section class="section" id="s2">
+  <div class="section-header">
+    <div class="section-num">2</div>
+    <div class="section-title">Creating Your Character</div>
+  </div>
+  <p>The character creation screen presents a newly generated character.<br>
+  Press <kbd>Enter</kbd> or click <strong>Confirm</strong> to start with that character.<br>
+  Press <kbd>r</kbd> or click <strong>Reroll</strong> to generate new parameters (unlimited times).</p>
+  <p>Items shown in <span style="color:var(--blue);">blue</span> or <span style="color:var(--gold);">yellow</span> text are manually configurable parameters.</p>
+  <div class="note">Yellow items will automatically reroll certain stats and skills when changed.</div>
+
+  <hr class="sep">
+
+  <div class="subsection">
+    <div class="subsection-title">Parameter Descriptions</div>
+    <div class="stat-grid">
+      <div class="stat-card"><h4>Alias</h4><p>Nickname, title, or self-given name. No effect on abilities or skills.</p></div>
+      <div class="stat-card"><h4>Name</h4><p>The character's name. No effect on abilities or skills.</p></div>
+      <div class="stat-card"><h4>Gender</h4><p>Male, Female, or Unknown. No effect on abilities or skills.</p></div>
+      <div class="stat-card"><h4>Age</h4><p>Set between 15 and 99. No effect on abilities or skills.</p></div>
+      <div class="stat-card"><h4>Height</h4><p>Set between 100 and 200. No effect on abilities or skills.</p></div>
+      <div class="stat-card"><h4>Weight</h4><p>Set between 30 and 150. No effect on abilities or skills.</p></div>
+      <div class="stat-card"><h4>Type</h4><p>Natural aptitude and growth tendency. Choose from 6 types. Changing type auto-rerolls stats and skills.</p></div>
+      <div class="stat-card"><h4>Birthplace</h4><p>Choose from 10 regions. Primarily affects initial stats and skills. Changing auto-rerolls some parameters.</p></div>
+    </div>
+  </div>
+  <div class="note">Regardless of type chosen, there are no restrictions on what equipment or items you can use.</div>
+
+  <hr class="sep">
+
+  <div class="subsection">
+    <div class="subsection-title">Type Guide</div>
+    <div class="guide-grid">
+      <div class="guide-card"><h4>⚔ Warrior</h4><p>High VIT and BTL. Combat skills improve readily. Rarely learns magic skills; low MAG; struggles to learn spells.</p></div>
+      <div class="guide-card"><h4>🗡 Thief</h4><p>High LUK. Skilled in stealth, lockpicking, and other non-combat skills. Good with SneakAttack and Throwing. Can learn some spells.</p></div>
+      <div class="guide-card"><h4>✝ Cleric</h4><p>Balanced type. Handles combat and magic reasonably well. Can learn many spells and acquires a variety of skills.</p></div>
+      <div class="guide-card"><h4>✨ Mage</h4><p>High MAG; can learn a very large number of spells. Starts with one Spellbook. Weak in direct combat.</p></div>
+      <div class="guide-card"><h4>⚔✨ Spellblade</h4><p>Combines Warrior and Mage traits. Starts with skills from both; high VIT and BTL; can use magic from the start. Growth is slow and the ceiling is lower.</p></div>
+      <div class="guide-card"><h4>👤 Citizen</h4><p>Ordinary civilian. Low VIT and BTL; starts with only one skill, rarely a combat or magic one.</p></div>
+    </div>
+  </div>
+
+  <hr class="sep">
+
+  <div class="subsection">
+    <div class="subsection-title">Birthplace Guide</div>
+    <div class="guide-grid">
+      <div class="guide-card"><h4>Central City</h4><p>National capital with high educational standards. Tends toward higher BTL.</p></div>
+      <div class="guide-card"><h4>Trade City</h4><p>Prosperous port city. Tends toward higher LUK.</p></div>
+      <div class="guide-card"><h4>Mining City</h4><p>Mountain mining city. Tends toward higher VIT.</p></div>
+      <div class="guide-card"><h4>Forest Town</h4><p>Entrance to the great northern forest. Bonus to Stealth.</p></div>
+      <div class="guide-card"><h4>Ruins Town</h4><p>Near ancient desert ruins. Said to have higher MAG.</p></div>
+      <div class="guide-card"><h4>Crossroads Town</h4><p>Where all trade routes meet; mixed cultures. May receive a variety of bonuses.</p></div>
+      <div class="guide-card"><h4>Northern Port</h4><p>Cold northern coast. Physically powerful; bonus to attacks.</p></div>
+      <div class="guide-card"><h4>Plains Village</h4><p>Northwestern plains settlement. Bonus to movement.</p></div>
+      <div class="guide-card"><h4>Swamp Village</h4><p>Southeastern wetlands settlement. Said to have high magic resistance.</p></div>
+      <div class="guide-card"><h4>Snowfield Village</h4><p>Northern snowfield settlement. Resilient; resistant to hunger and disease.</p></div>
+    </div>
+  </div>
+
+  <hr class="sep">
+
+  <div class="subsection">
+    <div class="subsection-title">Stats</div>
+    <div class="stat-grid">
+      <div class="stat-card"><h4>❤ VIT</h4><p>Physical endurance. Reaches 0 → character dies, game over. Restore with <code>E</code> (eat) or <code>R</code> (rest).</p></div>
+      <div class="stat-card"><h4>⚡ BTL</h4><p>Ability to act and handle objects. Higher = easier to hit enemies; harder for enemies to hit you. Restore with rest.</p></div>
+      <div class="stat-card"><h4>🍀 LUK</h4><p>Fortune. Higher LUK = good things happen more often. Affects lockpicking and trap disarm success. Restore with rest.</p></div>
+      <div class="stat-card"><h4>✨ MAG</h4><p>Magical power. Higher = stronger spell effects. Recovers slowly over time. Not displayed in-game.</p></div>
+    </div>
+    <div class="note">Each stat has a maximum value that can be increased through level-ups and other means.</div>
+    <div class="warn">Death permanently deletes your save file. A morgue file (CharName_morgue.txt) is written to the "save" folder when you die.</div>
+  </div>
+
+  <hr class="sep">
+
+  <div class="subsection">
+    <div class="subsection-title">Unique Ability / Skill</div>
+    <p>A special ability or skill unique to the character, granted once at creation. It can never be acquired or lost during the game.</p>
+  </div>
+
+  <hr class="sep">
+
+  <div class="subsection">
+    <div class="subsection-title">Skill Guide</div>
+    <p>Skills are useful abilities and knowledge for adventuring. Each has a level; higher level = more proficient. Gain new skills or raise levels through level-ups and events. Maximum 8 skills. Use <code>S</code> to view your list; select a skill to read its description.</p>
+
+    <table class="skill-table">
+      <tr><th>Skill</th><th>Effect</th></tr>
+      <tr><td>Sword / Dagger / Axe / Hummer / Spear</td><td>Weapon skills for the corresponding weapon category. Grants hit and damage bonuses. Sword↔Dagger and Axe↔Hummer are correlated (having one at Lv.n counts as Lv.n-1 in the other). Spear also applies to Staves.</td></tr>
+      <tr><td>MartialArts</td><td>Reduces the unarmed penalty. May trigger extra punches/kicks even while armed.</td></tr>
+      <tr><td>Throwing</td><td>Increases hit rate, damage, and effects when using the <code>t</code> (throw) command.</td></tr>
+      <tr><td>Evasion</td><td>Makes it easier to dodge enemy attacks, breath, spells, and traps. Less effective in heavy armor.</td></tr>
+      <tr><td>Armor</td><td>Bonus to defense from armor. Treats equipped armor as lighter. More effective with heavier armor.</td></tr>
+      <tr><td>Shield</td><td>Bonus to block rate and defense with a shield. Treats shield as lighter.</td></tr>
+      <tr><td>Initiative</td><td>Easier to act before enemies. Bonus to direct attack hit rate.</td></tr>
+      <tr><td>SneakAttack</td><td>Large bonus when attacking unaware, confused, or frightened enemies. Especially effective with daggers.</td></tr>
+      <tr><td>Stealth</td><td>Harder for creatures to notice you. Less effective in heavy armor.</td></tr>
+      <tr><td>FleetFooted</td><td>Reduces movement turn cost. Lowers chance of being attacked while moving; raises chance enemies give up chasing.</td></tr>
+      <tr><td>Carry</td><td>Increases carry weight limit.</td></tr>
+      <tr><td>Packing</td><td>Increases carry size limit.</td></tr>
+      <tr><td>Unlock</td><td>Better lockpicking, trap detection, and disarming success rates. Also easier to find hidden doors and traps.</td></tr>
+      <tr><td>Steal</td><td>Higher steal success rate. Also slightly improves lockpicking and trap disarming.</td></tr>
+      <tr><td>Berserk</td><td>Enables Berserk via <code>a</code>. While active: greatly enhanced combat, 2× movement speed, cannot perform intellectual actions, costs 1 VIT/turn. Ends after a set number of turns. May trigger involuntarily.</td></tr>
+      <tr><td>BerserkControl</td><td>Suppresses involuntary Berserk. Allows manual cancellation with <code>a</code> (not guaranteed).</td></tr>
+      <tr><td>SpellCasting</td><td>Reduces casting time. Increases spell memory capacity.</td></tr>
+      <tr><td>Arcana</td><td>Reduces VIT cost when casting spells.</td></tr>
+    </table>
+
+    <div class="subsection" style="margin-top:16px;">
+      <div class="subsection-title">Magic Skills &amp; Corresponding Schools</div>
+      <p>Each of these skills enhances its corresponding spell school: increases effects, reduces casting time and VIT cost. Casting time reduction does not stack with SpellCasting (higher value applies). VIT reduction stacks with Arcana.</p>
+      <table class="skill-table">
+        <tr><th>Skill</th><th>Spell School</th></tr>
+        <tr><td>MagicalMechanics</td><td>Destruction</td></tr>
+        <tr><td>FireElementalism</td><td>Fire</td></tr>
+        <tr><td>WaterElementalism</td><td>Water</td></tr>
+        <tr><td>WindElementalism</td><td>Wind</td></tr>
+        <tr><td>EarthElementalism</td><td>Earth</td></tr>
+        <tr><td>ToxicHerbalism</td><td>Poison</td></tr>
+        <tr><td>Sorcery</td><td>Occult</td></tr>
+        <tr><td>IllusionMagic</td><td>Illusion</td></tr>
+        <tr><td>AlchemyMagic</td><td>AlchemyMagic</td></tr>
+        <tr><td>Astrology</td><td>Foresight</td></tr>
+        <tr><td>TeleportationMagic</td><td>Teleportation</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <hr class="sep">
+
+  <div class="subsection">
+    <div class="subsection-title">Starting Spells</div>
+    <ul style="margin-left:20px; color:var(--text-dim); font-size:0.9em;">
+      <li style="margin-bottom:4px;"><strong>Mage / Cleric</strong>: start with 2 spells memorized (Mages also carry one Spellbook)</li>
+      <li style="margin-bottom:4px;"><strong>Spellblade</strong>: start with 1 spell memorized</li>
+      <li><strong>Warrior / Thief / Citizen</strong>: no starting spells</li>
+    </ul>
+  </div>
+</section>
+
+
+<!-- ===== SECTION 3 ===== -->
+<section class="section" id="s3">
+  <div class="section-header">
+    <div class="section-num">3</div>
+    <div class="section-title">The Main Screen</div>
+  </div>
+  <p>After character creation the Main Screen appears — the primary gameplay screen showing you and your surroundings. It is divided into four areas:</p>
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:16px 0; max-width:600px;">
+    <div class="guide-card" style="border-top:3px solid var(--gold);"><h4>↖ Upper-left: Object Display</h4><p>A numbered list of objects you can interact with in your current location.</p></div>
+    <div class="guide-card" style="border-top:3px solid var(--accent);"><h4>↗ Upper-right: Status Display</h4><p>Your alias, name, level, experience, stats (current/max), hunger, and status effects.</p></div>
+    <div class="guide-card" style="border-top:3px solid var(--blue);"><h4>↙ Lower-left: Message Display</h4><p>Results of your actions. If "→More" appears, click or press any key to continue.</p></div>
+    <div class="guide-card" style="border-top:3px solid var(--green);"><h4>↘ Lower-right: Mini-map</h4><p>Rooms you have visited shown as blue squares. White dot = your current position.</p></div>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">Interacting with Objects</div>
+    <div class="example-box">1: Notice Board       → read it
+2: Bread Ration      → pick it up
+3: Short Sword       → pick it up
+4: 3 Goblins         → attack them</div>
+    <p>Selecting an object performs the default action. Non-default actions are available via commands (e.g. press <code>A</code> then <code>1</code> to attack the notice board).</p>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">Status Display</div>
+    <p>Status effects appear below your stats. <span style="color:var(--gold);">Yellow</span> = negative; <span style="color:var(--blue);">blue</span> = positive. Use <code>C</code> to view all effects if the display is full.</p>
+  </div>
+
+  <hr class="sep">
+
+  <div class="subsection">
+    <div class="subsection-title">Creatures</div>
+    <table class="cmd-table">
+      <tr><th>Color</th><th>Meaning</th></tr>
+      <tr><td><span style="color:#f5a623;">Yellow</span></td><td>Hostile — has not noticed you yet</td></tr>
+      <tr><td><span style="color:#e94560;">Red</span></td><td>Hostile — has noticed you; will attack every turn</td></tr>
+      <tr><td><span style="color:#5b9bd5;">Blue</span></td><td>Friendly — selecting it talks rather than attacks</td></tr>
+    </table>
+    <div class="note">"Friendly" only means the creature is not immediately trying to eat you — it is not necessarily your ally!</div>
+    <p>Friendly creatures may carry quests. Talk to them for a "Hear Request" option. Review accepted quests anytime with <code>Q</code>.</p>
+    <div class="warn">Most quests have a time limit. If you fail to complete within the allotted turns, the quest fails and no reward is given.</div>
+  </div>
+
+  <hr class="sep">
+
+  <div class="subsection">
+    <div class="subsection-title">Mini-map &amp; Movement</div>
+    <table class="cmd-table" style="margin-bottom:14px;">
+      <tr><th>Mini-map Display</th><th>Meaning</th></tr>
+      <tr><td>Blue / yellow border room</td><td>Named "Special Room." Blue border = relatively safe (shop, etc.).</td></tr>
+      <tr><td>Bright blue square (upper-left of room)</td><td>Up stairs</td></tr>
+      <tr><td>Dark blue square (lower-left of room)</td><td>Down stairs</td></tr>
+      <tr><td>Red square (lower-left of room)</td><td>Entrance to a special branch floor — special danger awaits!</td></tr>
+    </table>
+    <p>Available exits are shown to the right of the Object Display:</p>
+    <div class="example-box">↑: North exit    ←: West exit
+↓: South exit    →: East door</div>
+    <table class="cmd-table" style="margin-top:10px;">
+      <tr><th>Door Color</th><th>Meaning</th></tr>
+      <tr><td><span style="color:#e0e0e0;">White</span> (blue on mini-map)</td><td>Unlocked door</td></tr>
+      <tr><td><span style="color:#e94560;">Red</span></td><td>Locked door. Use <code>u</code> to attempt to unlock.</td></tr>
+      <tr><td><span style="color:#f5a623;">Yellow</span></td><td>Lock status unknown. Selecting it checks (costs 1 turn). Use <code>u</code> to unlock if locked.</td></tr>
+    </table>
+    <div class="note">You can also move with <code>h</code>/<code>j</code>/<code>k</code>/<code>l</code> (same as ←/↓/↑/→).</div>
+    <p>Stairs appear below exits: <code>&lt;: Up Stairs</code> or <code>&gt;: Down Stairs</code>.<br>
+    Below the stairs, "Ground Items" shows items on the floor. Click to pick up, or use <code>g</code> for the full list.</p>
+  </div>
+</section>
+
+
+<!-- ===== SECTION 4 ===== -->
+<section class="section" id="s4">
+  <div class="section-header">
+    <div class="section-num">4</div>
+    <div class="section-title">Combat Screen &amp; Combat</div>
+  </div>
+  <p>Selecting a hostile creature opens the Combat Screen:</p>
+  <div class="example-box">           DEX  VIT
+1:Goblin    5    5
+2:Goblin    4    6
+3:Goblin    5    4</div>
+  <p>Select a creature to attack it.</p>
+
+  <div class="subsection">
+    <div class="subsection-title">Combat Basics</div>
+    <ul style="margin-left:20px; color:var(--text-dim); font-size:0.9em; line-height:2.1;">
+      <li>Hit chance: your BTL, enemy BTL, weapon stats, skill level (0 if lacking) + randomness.</li>
+      <li>Each attack you make is met with one counter-attack (faster/slower creatures may deviate).</li>
+      <li>Fighting unarmed: severe penalty to both attack and defense (MartialArts skill helps).</li>
+      <li>Press <kbd>Esc</kbd> at any time to return to the Main Screen.</li>
+    </ul>
+    <div class="warn">Fighting unarmed penalizes both attack AND defense. Always equip a weapon!</div>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">Combat-Exclusive Commands</div>
+    <table class="cmd-table">
+      <tr><th>Key</th><th>Description</th></tr>
+      <tr><td><span class="key">b</span></td><td><strong>Defend</strong> — reduces chance of being hit and lowers damage taken (on Main Screen: "Vigilance")</td></tr>
+      <tr><td><span class="key">A</span></td><td><strong>Mighty Blow</strong> — may deal extra damage; always costs 1 LUK (on Main Screen: "Attack")</td></tr>
+    </table>
+    <div class="note">Some commands such as <code>R</code> (Rest) and <code>M</code> (Memorize Spell) are only available on the Main Screen.</div>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">Auto-Target</div>
+    <div class="auto-target">
+      <div class="k">-</div><div class="v">Target the creature with the lowest VIT (excluding 0)</div>
+      <div class="k">+</div><div class="v">Target the creature with the highest VIT</div>
+      <div class="k">/</div><div class="v">Target the creature with the lowest BTL</div>
+      <div class="k">*</div><div class="v">Target the creature with the highest BTL</div>
+    </div>
+    <p style="margin-top:8px; font-size:0.88em; color:var(--text-dim);">If multiple creatures tie, the one with the lowest number (highest on screen) is targeted. These keys also work when selecting a target for spells or wands.</p>
+    <div class="warn">Don't spam auto-target so fast that you miss important messages or fail to notice your VIT dropping! Use <code>L</code> to review scrolled messages.</div>
+  </div>
+</section>
+
+
+<!-- ===== SECTION 5 ===== -->
+<section class="section" id="s5">
+  <div class="section-header">
+    <div class="section-num">5</div>
+    <div class="section-title">Spells</div>
+  </div>
+  <p>Press <code>m</code> to cast a spell. Select from the list of memorized spells; some require target selection before casting begins.</p>
+
+  <div class="subsection">
+    <div class="subsection-title">Spell Parameters</div>
+    <div class="stat-grid">
+      <div class="stat-card"><h4>Level</h4><p>Spell power. Also determines how much Memory Capacity is used when memorized.</p></div>
+      <div class="stat-card"><h4>Casting Time</h4><p>Turns required to cast. If Casting Time ≥ 2, taking damage or losing sight of the target interrupts casting.</p></div>
+      <div class="stat-card"><h4>VIT Cost</h4><p>VIT consumed on cast completion. Reaching 0 or below kills your character!</p></div>
+      <div class="stat-card"><h4>School</h4><p>The spell's elemental/magical school. Having the corresponding skill reduces cost and increases effect.</p></div>
+    </div>
+    <div class="note">Heavy armor increases casting time by (armor base AC − 3). Example: Chain Mail (base AC=5) → +2 casting time.</div>
+    <p>Press <code>m</code> → <kbd>Enter</kbd> to view the spell list with all parameters. Press <code>?</code> then select a spell to read its description.</p>
+  </div>
+
+  <hr class="sep">
+
+  <div class="subsection">
+    <div class="subsection-title">Memorizing Spells</div>
+    <p>Use <code>M</code>, select a Spellbook, then choose a spell to begin memorizing it.</p>
+    <div class="warn">Memorization takes many turns. If a hostile creature appears, memorization is interrupted and must be restarted from the beginning.</div>
+    <div class="subsection-title" style="margin-top:16px;">Memory Capacity</div>
+    <p>The total spell levels that can be memorized at once.</p>
+    <div class="example-box">Example — Capacity 4:
+  Lv.1 spell × 1  +  Lv.3 spell × 1  (1+3=4)
+  Lv.2 spell × 2  (2+2=4)</div>
+    <p>Capacity increases with level-ups and the SpellCasting skill. Current remaining capacity is shown at the top of the <code>M</code> screen.</p>
+  </div>
+
+  <hr class="sep">
+
+  <div class="subsection">
+    <div class="subsection-title">Enemy Spellcasters</div>
+    <p>Creatures that cast spells can be just as dangerous as your own magic — or more so. Dealing damage to a casting creature interrupts its spell.</p>
+  </div>
+</section>
+
+
+<!-- ===== SECTION 6 ===== -->
+<section class="section" id="s6">
+  <div class="section-header">
+    <div class="section-num">6</div>
+    <div class="section-title">Items</div>
+  </div>
+  <p>Acquired items are stored in your pack. All items have weight and size; you cannot exceed your carry limits.</p>
+
+  <div class="subsection">
+    <div class="subsection-title">Inventory (<code>I</code> command)</div>
+    <p>Shows all carried items with type, quantity, weight, and size. Page with ←/→. Select an item for details.</p>
+    <div class="note">Click column headers ("Name," "Type," "Weight," "Size") to sort. First click = descending; subsequent clicks toggle asc/desc. "Name" sorts by symbol letter.</div>
+    <p>The top shows your gold and: <strong>Weight: current/limit &nbsp; Size: current/limit</strong></p>
+    <table class="cmd-table" style="margin-top:10px;">
+      <tr><th>Limit</th><th>How to Increase</th></tr>
+      <tr><td>Weight limit</td><td>Level-up, Carry skill, or magic items (e.g. Ring of Strength)</td></tr>
+      <tr><td>Size limit</td><td>Packing skill only</td></tr>
+    </table>
+    <div class="note">Regardless of weight/size, you can only carry up to 52 different item types (a–z, A–Z).</div>
+  </div>
+
+  <hr class="sep">
+
+  <div class="subsection">
+    <div class="subsection-title">Identifying Items</div>
+    <p>Some items (potions, scrolls, rings, etc.) start with unidentified names like "Red Potion" or "Copper Ring." Identifying an item reveals its true name and properties.</p>
+    <table class="cmd-table">
+      <tr><th>Method</th><th>Description</th></tr>
+      <tr><td>Scroll of Identify</td><td>Identifies one item from your pack or nearby</td></tr>
+      <tr><td>Shop</td><td>Request identification for a fee</td></tr>
+      <tr><td>Spell</td><td>Cast an identification spell</td></tr>
+      <tr><td>Use / Equip</td><td>Some items are identified when used or equipped</td></tr>
+    </table>
+  </div>
+
+  <hr class="sep">
+
+  <div class="subsection">
+    <div class="subsection-title">Item Types</div>
+    <div class="item-grid">
+      <div class="item-card">
+        <h4>⚔ Weapons (Dagger, Longsword, Mace, Axe, Spear, Staff)</h4>
+        <p>Equip with <code>e</code>. Fighting unarmed penalizes both attack and defense. Hit/damage modifiers shown after identification (e.g. "Short Sword (+1,+1)"). Staves have no modifiers but boost spellcasting. Some weapons require two hands (cannot use a shield); shown as "(Two-handed)." Two-handing grants a damage bonus (not Staves). Most weapons are identified on equip (not Artifacts).</p>
+      </div>
+      <div class="item-card">
+        <h4>🛡 Armor (Shield, Body, Helmet, Gauntlets, Boots, Cloak)</h4>
+        <p>Equip with <code>e</code>. AC (Armor Class) — higher is better. AC modifier shown as [+x]. Check total AC with <code>e</code> or <code>C</code>. Example: AC:10(Shield:3) = shield AC 3, other armor total AC 10. Most armor identified on equip (not Artifacts).</p>
+      </div>
+      <div class="item-card">
+        <h4>💍 Rings</h4>
+        <p>Equip with <code>e</code> (one on each hand). Magical effects — not always beneficial. Rings with modifiers (e.g. "Ring of VIT (+2)") are identified on equip (except Artifacts).</p>
+      </div>
+      <div class="item-card">
+        <h4>📿 Amulets</h4>
+        <p>Worn around the neck (one at a time). Similar to rings but rarer effects. Amulets with modifiers are identified on equip (except Artifacts). Modifiers on rings and amulets never change.</p>
+      </div>
+      <div class="item-card">
+        <h4>⚠ Cursed Equipment</h4>
+        <p>Weapons, armor, rings, or amulets can be cursed. Cursed items usually have negative effects and cannot be unequipped until the curse is lifted. <span style="color:#f5a623;">Yellow</span> = possibly cursed; <span style="color:#e94560;">Pink</span> = confirmed cursed. Remove with a Scroll of Remove Curse or other magic.</p>
+      </div>
+      <div class="item-card">
+        <h4>☆ Artifacts</h4>
+        <p>Rare legendary equipment prefixed with ☆ or ★. Unique names and powerful magic (not always positive). Not identified by equipping — use a Scroll of Identify.</p>
+      </div>
+      <div class="item-card">
+        <h4>🍞 Food</h4>
+        <p>Essential for survival. Your character grows hungry over time; starvation drains VIT. Eat with <code>E</code> to relieve hunger and restore some VIT. Nutritional value varies. Some foods have magical effects.</p>
+      </div>
+      <div class="item-card">
+        <h4>🧪 Potions</h4>
+        <p>Drink with <code>q</code>. Identified when consumed. Some potions are dangerous — identify safely when possible.</p>
+      </div>
+      <div class="item-card">
+        <h4>📜 Scrolls</h4>
+        <p>Read with <code>r</code> to activate. Identified only when the effect successfully triggers. Consumed after being read.</p>
+      </div>
+      <div class="item-card">
+        <h4>📚 Books (Spellbooks)</h4>
+        <p>Read with <code>r</code> to identify. Then use <code>M</code> to memorize spells from them. Reading an identified Spellbook with <code>r</code> shows descriptions of its spells.</p>
+      </div>
+      <div class="item-card">
+        <h4>🪄 Wands</h4>
+        <p>Zap with <code>z</code>. Press <code>@</code> to target yourself. Limited charges; runs out after several uses. Identified when it produces an effect (charge count is not revealed then). Use a Scroll of Recharging to restore charges.</p>
+      </div>
+      <div class="item-card">
+        <h4>💰 Gold</h4>
+        <p>Currency for shops and transactions. Rare — spend wisely! You cannot sell items to shops.</p>
+      </div>
+      <div class="item-card">
+        <h4>🔑 Keys</h4>
+        <p>Magic Keys open ordinary doors instantly (<code>p</code> command). Each use consumes one key. Rumors speak of special keys for special doors.</p>
+      </div>
+      <div class="item-card">
+        <h4>📦 Miscellaneous</h4>
+        <p>Everything else — from important items to worthless trinkets.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ===== SECTION 7 ===== -->
+<section class="section" id="s7">
+  <div class="section-header">
+    <div class="section-num">7</div>
+    <div class="section-title">Objects</div>
+  </div>
+  <p>The dungeon contains many interactable objects beyond items and creatures.</p>
+
+  <div class="subsection">
+    <div class="subsection-title">Notice Boards</div>
+    <p>Select to read the message. Messages may be meaningless or false — beware. Multiple variants exist (notice boards, bulletin boards, etc.).</p>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">Chests</div>
+    <p>Containers holding items. Almost always trapped.</p>
+    <ol style="margin-left:20px; color:var(--text-dim); font-size:0.9em; line-height:2.2;">
+      <li>Select chest → attempt to identify the trap (e.g. "Wooden Box (Arrow?)")</li>
+      <li>Select again → the trap to disarm is shown</li>
+      <li>Select the correct trap → attempt to disarm it</li>
+    </ol>
+    <div class="warn">Selecting the wrong trap triggers the actual trap. Even the correct choice can fail the disarm roll and trigger it.</div>
+    <p>After disarming (regardless of outcome), the chest can be freely opened. You can also store items in chests (press <code>d</code> in the chest item list).</p>
+    <div class="note">Items in chests won't be picked up or eaten by creatures, but some creatures may open a chest and take items while you aren't watching.</div>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">Room Traps</div>
+    <p>Trapped rooms display a hint like "You sense something strange about the walls." The trap doesn't appear in the object list until discovered. Any action by you or a creature may trigger it.</p>
+    <p>Use <code>b</code> (Vigilance) to search for traps (chance based on LUK and Unlock skill). Once found, select the trap to disarm it with certainty (may take several turns).</p>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">Monuments / Statues</div>
+    <p>Stone structures. Interacting triggers a magical effect (may be harmful). Some can only be used once. First contact shows an unidentified name; touching identifies it.</p>
+  </div>
+
+  <div class="note">In named special rooms, greet the occupant before examining objects — examining without greeting may anger them!</div>
+</section>
+
+
+<!-- ===== SECTION 8 ===== -->
+<section class="section" id="s8">
+  <div class="section-header">
+    <div class="section-num">8</div>
+    <div class="section-title">Commands</div>
+  </div>
+  <p>Most actions are performed by pressing a single letter key. Commands can also be executed from the Command List or Command Palette.</p>
+
+  <div class="guide-grid" style="margin-bottom:20px;">
+    <div class="guide-card">
+      <h4>Command List (<code>c</code>)</h4>
+      <p>Opens a list on the right side. Navigate with ↑/↓, execute with Enter. Switch pages with →/← (page 1: lowercase; page 2: uppercase/special). Click items to execute.</p>
+    </div>
+    <div class="guide-card">
+      <h4>Command Palette (<code>P</code>)</h4>
+      <p>Icon buttons. Toggle with <code>P</code>. Provides: <code>a</code> / <code>e</code> / <code>d</code> / <code>i</code> / <code>I</code> / <code>b</code> / <code>v</code> / <code>m</code> / <code>C</code> / <code>R</code>.</p>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">Lowercase Commands</div>
+    <table class="cmd-table">
+      <tr><th>Key</th><th>Name</th><th>Description</th></tr>
+      <tr><td><span class="key">a</span></td><td>Use Ability</td><td>Activate an ability from mutations or magical equipment. Requires resources (VIT, LUK, and/or nutrition). Insufficient resources = failure. Using when VIT is too low can be fatal!</td></tr>
+      <tr><td><span class="key">b</span></td><td>Vigilance</td><td>Search for hidden traps and doors (chance-based). Raises stealth. In combat: <strong>Defend</strong> (reduces hits and damage received).</td></tr>
+      <tr><td><span class="key">c</span></td><td>Command List</td><td>Opens the Command List.</td></tr>
+      <tr><td><span class="key">d</span></td><td>Drop (amount)</td><td>Drop items from your pack. If item count &gt; 1, specify how many. Non-number or excess = drop all. <code>d</code> specifies amount; <code>D</code> always drops full stack.</td></tr>
+      <tr><td><span class="key">e</span></td><td>Equip</td><td>Equip or unequip items. Existing item in that slot is auto-unequipped first. Each action costs 1 turn — be careful changing gear near enemies!</td></tr>
+      <tr><td><span class="key">g</span> / <span class="key">^</span></td><td>Ground Items</td><td>View items on the floor. Select to pick up (chest → opens it). Does not advance time (but picking up does).</td></tr>
+      <tr><td><span class="key">h/j/k/l</span></td><td>Move</td><td>Same as ←/↓/↑/→ respectively.</td></tr>
+      <tr><td><span class="key">i</span></td><td>Use Item</td><td>Use an item from your pack (food→eat, potion→drink, scroll→read, etc.). Items with no action still advance time.</td></tr>
+      <tr><td><span class="key">m</span></td><td>Cast Spell</td><td>Cast a memorized spell. Some require target selection first. Casting may take several turns. See section 5.</td></tr>
+      <tr><td><span class="key">p</span></td><td>Magic Key</td><td>Use a Magic Key to unlock a door in a chosen direction (←↓↑→). Each use consumes one key. Main Screen only.</td></tr>
+      <tr><td><span class="key">q</span></td><td>Drink</td><td>Drink a potion or similar item. Some potions (poison, paralysis, etc.) are dangerous!</td></tr>
+      <tr><td><span class="key">r</span></td><td>Read</td><td>Read a scroll, Spellbook, etc. Reading a Spellbook identifies it, enabling <code>M</code> to memorize spells.</td></tr>
+      <tr><td><span class="key">s</span></td><td>Steal</td><td>Steal from a creature or shop item. Success based mainly on LUK and Steal. LUK may be consumed. Getting caught angers the owner; shop theft damages your reputation.</td></tr>
+      <tr><td><span class="key">t</span></td><td>Throw</td><td>Select an item, then a target to throw at. Appropriate items (e.g. daggers) deal damage on hit.</td></tr>
+      <tr><td><span class="key">u</span></td><td>Unlock / Unlock</td><td>Unlock doors or disarm chest traps. Success based on LUK and Unlock skill. Using on an un-identified chest opens it directly (trap fires if one exists). Main Screen only.<br><small style="color:var(--text-dim);">Tip: <code>u</code> + direction key reveals a hidden door in that wall with certainty.</small></td></tr>
+      <tr><td><span class="key">v</span></td><td>View</td><td>Observe a target for information. Creatures: shows DEX, VIT, status, and equipped weapon. Does not advance time.</td></tr>
+      <tr><td><span class="key">w</span></td><td>Wield</td><td>Hold an item in hand (even oversized items). Press <code>@</code> to return it to your pack. Held items are used as weapons in combat, overriding equipped weapons — be careful!</td></tr>
+      <tr><td><span class="key">z</span></td><td>Zap Wand</td><td>Select a wand and target. Press <code>@</code> to target yourself. Limited charges; revealed by identification or high MAG.</td></tr>
+    </table>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">Uppercase &amp; Special Commands</div>
+    <table class="cmd-table">
+      <tr><th>Key</th><th>Name</th><th>Description</th></tr>
+      <tr><td><span class="key">A</span></td><td>Attack</td><td>Attack any target including friendly creatures and non-creature objects. Selecting a creature shifts to Combat. In combat: <strong>Mighty Blow</strong> (may deal extra damage; costs 1 LUK always).</td></tr>
+      <tr><td><span class="key">C</span></td><td>Character Info</td><td>View character information (←→ to page). Page 1 shows resistances and total AC, but only for identified sources. Ctrl+P saves a character file to the "save" folder. No time advance.</td></tr>
+      <tr><td><span class="key">D</span></td><td>Drop All</td><td>Same as <code>d</code> but always drops the full stack.</td></tr>
+      <tr><td><span class="key">E</span></td><td>Eat</td><td>Eat food. Cannot eat when full. Restores hunger and some VIT.</td></tr>
+      <tr><td><span class="key">I</span></td><td>Inventory</td><td>Full item list (←→ to page). Select for details. No time advance.</td></tr>
+      <tr><td><span class="key">L</span></td><td>Message Log</td><td>Scroll back through past messages (up to 30 pages / 390 lines). Ctrl+P saves a log file. No time advance.</td></tr>
+      <tr><td><span class="key">M</span></td><td>Memorize Spell</td><td>Memorize spells from Spellbooks. Main Screen only. See section 5.</td></tr>
+      <tr><td><span class="key">O</span></td><td>Options</td><td>Adjust screen scale, volume, colors, cursor display, etc. To reset all settings: delete setting.ini from the "save" folder and restart.</td></tr>
+      <tr><td><span class="key">P</span></td><td>Command Palette</td><td>Toggle the Command Palette.</td></tr>
+      <tr><td><span class="key">Q</span></td><td>Quest List</td><td>View active quests; select for details. Press <code>-</code> to delete (counts as failure; some quests can be re-accepted). No time advance.</td></tr>
+      <tr><td><span class="key">R</span></td><td>Rest</td><td>Pass 20 turns, recovering VIT, BTL, and LUK. Unavailable near hostile creatures or when starving. Interrupted if danger arises. Main Screen only.</td></tr>
+      <tr><td><span class="key">S</span></td><td>Skill List</td><td>View learned skills; select for descriptions. No time advance.</td></tr>
+      <tr><td><span class="key">T</span></td><td>Return to Title</td><td>Suspend adventure and return to the title screen (save required; cannot return without saving).</td></tr>
+      <tr><td><span class="key">U</span></td><td>Level Up</td><td>When "Up" appears in green next to your exp, execute this command (or click "Up") to level up. Raises stats; acquire or improve skills. No time advance. Main Screen only.</td></tr>
+      <tr><td><span class="key">@</span></td><td>Mutation List</td><td>View acquired mutations. No time advance. Mutations with abilities can be activated with <code>a</code>.</td></tr>
+      <tr><td><span class="key">=</span></td><td>Register Macro</td><td>Register macros to F1–F12 keys. Press <code>=</code> again to reload macro.txt. No time advance. See section 9.</td></tr>
+      <tr><td><span class="key">?</span></td><td>Command List</td><td>Display the command reference. No time advance.</td></tr>
+      <tr><td><span class="key">Ctrl+D</span></td><td>Minimize</td><td>Immediately minimizes the game window. No time advance.</td></tr>
+    </table>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">~ Quick Command Reference ~</div>
+    <div class="example-box">a: Use Ability            A: Attack (Combat: Mighty Blow)
+b: Vigilance (Combat: Defend)  C: Character Info
+c: Command List           D: Drop All
+d: Drop (specify amount)  E: Eat
+e: Equip                  I: Inventory
+g: View Ground Items      L: Message Log
+i: Use Item               M: Memorize Spell
+m: Cast Spell             O: Options
+p: Magic Key              P: Toggle Command Palette
+q: Drink                  Q: Quest List
+r: Read                   R: Rest
+s: Steal                  S: Skill List
+t: Throw                  T: Return to Title
+u: Unlock/Unlock          U: Level Up
+v: View                   @: Mutation List
+w: Wield                  =: Register Macro
+z: Zap Wand               ?: Command Reference
+h/j/k/l = ←/↓/↑/→        Ctrl+D: Minimize</div>
+  </div>
+</section>
+
+
+<!-- ===== SECTION 9 ===== -->
+<section class="section" id="s9">
+  <div class="section-header">
+    <div class="section-num">9</div>
+    <div class="section-title">Macros</div>
+  </div>
+  <p>A macro lets you execute multiple commands with a single key press. Macros can be assigned to alphabetic keys (a–z / A–Z) or F1–F12.</p>
+  <div class="example-box" style="margin-bottom:8px;"><span style="color:var(--text-dim);">Example — casting "Magic Missiles":</span>
+Normal:        m → a  (2 keystrokes)
+With macro:    F1      (1 keystroke)</div>
+
+  <hr class="sep">
+
+  <div class="subsection">
+    <div class="subsection-title">Editing macro.txt</div>
+    <p>Edit <code>macro.txt</code> in the <code>save</code> folder of the game's install directory. Macros are shared across all characters and loaded on game start.</p>
+    <div class="macro-example">
+<span class="comment"># macro.txt example</span>
+<span class="key-def">a</span><span style="color:var(--text);">:</span><span class="value">ma</span>      <span class="comment"># 'a' key → cast the spell with symbol 'a'</span>
+<span class="key-def">F1</span><span style="color:var(--text);">:</span><span class="value">Da!b</span>    <span class="comment"># F1 key → drop all of items a and b</span></div>
+
+    <table class="cmd-table" style="margin-top:12px;">
+      <tr><th>Special Key</th><th>How to Write</th></tr>
+      <tr><td>Enter</td><td><code>~</code> (tilde) or <code>{ENTER}</code></td></tr>
+      <tr><td>Esc</td><td><code>{ESC}</code></td></tr>
+      <tr><td>← key</td><td><code>{LEFT}</code> (or <code>h</code>)</td></tr>
+      <tr><td>↑ key</td><td><code>{UP}</code> (or <code>k</code>)</td></tr>
+      <tr><td>↓ key</td><td><code>{DOWN}</code> (or <code>j</code>)</td></tr>
+      <tr><td>→ key</td><td><code>{RIGHT}</code> (or <code>l</code>)</td></tr>
+    </table>
+    <div class="note">Macros cannot contain other macros (F1–F12 keys) — this prevents infinite loops. During macro execution, only one screen of messages is shown; all messages are recorded in the log (<code>L</code> to review).</div>
+  </div>
+
+  <hr class="sep">
+
+  <div class="subsection">
+    <div class="subsection-title">The <code>!</code> Command &amp; Interrupt Options</div>
+    <p><code>!</code> is a macro-only command that interrupts the macro when the configured conditions are met.</p>
+    <div class="macro-example">
+<span class="section-label">-----Interrupt Options-----</span>
+<span class="comment">(1)</span> <span class="key-def">'!' interrupts when enemies are nearby</span><span style="color:var(--text);">:</span> <span class="value">No</span>
+<span class="comment">(2)</span> <span class="key-def">'!' interrupts when VIT &lt;= 5</span><span style="color:var(--text);">:</span> <span class="value">No</span>
+<span class="key-def">'!' interrupts when both (1) and (2)</span><span style="color:var(--text);">:</span> <span class="value">Yes</span>
+
+<span class="section-label">-----Always Interrupt Options-----</span>
+<span class="comment">(3)</span> <span class="key-def">Always interrupt when enemies are nearby</span><span style="color:var(--text);">:</span> <span class="value">No</span>
+<span class="comment">(4)</span> <span class="key-def">Always interrupt when VIT &lt;= 5</span><span style="color:var(--text);">:</span> <span class="value">No</span>
+<span class="key-def">Always interrupt when both (3) and (4)</span><span style="color:var(--text);">:</span> <span class="value">No</span>
+<span class="key-def">Always interrupt when paralyzed</span><span style="color:var(--text);">:</span> <span class="value">Yes</span></div>
+
+    <p style="font-size:0.88em; color:var(--text-dim); margin-top:8px;">Change ": Yes" to anything else to disable that condition. Change the number in "VIT &lt;= x" to adjust the threshold. "Always" options trigger regardless of whether <code>!</code> appears in the macro.</p>
+  </div>
+
+  <hr class="sep">
+
+  <div class="subsection">
+    <div class="subsection-title">Registering Macros In-Game (<code>=</code> command)</div>
+    <p>Press <code>=</code> in the Main Screen or Combat Screen, select a key (F1–F12), enter the keystrokes, then press F1 to confirm. The macro is registered and macro.txt is updated automatically.</p>
+    <p>Press <code>=</code> → <code>=</code> again to immediately reload macro.txt and apply any file edits.</p>
+    <div class="note">To reset macros to default: delete macro.txt from the "save" folder and restart the game. A default macro.txt will be regenerated.</div>
+  </div>
+</section>
+
+
+</main>
+</div>
+
+<script>
+const sections = document.querySelectorAll('.section');
+const navLinks = document.querySelectorAll('nav a');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navLinks.forEach(a => a.classList.remove('active'));
+      const active = document.querySelector(`nav a[href="#${e.target.id}"]`);
+      if (active) active.classList.add('active');
+    }
+  });
+}, { threshold: 0.2, rootMargin: '-60px 0px -60% 0px' });
+sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>

@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Text Dungeon — 游戏手册</title>
+<style>
+  :root {
+    --bg: #1a1a2e;
+    --surface: #16213e;
+    --surface2: #0f3460;
+    --accent: #e94560;
+    --gold: #f5a623;
+    --text: #e0e0e0;
+    --text-dim: #9a9ab0;
+    --border: #2a2a4a;
+    --code-bg: #0d0d1a;
+    --green: #4caf82;
+    --blue: #5b9bd5;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Microsoft YaHei', 'PingFang SC', 'Hiragino Sans GB', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.85;
+    font-size: 15px;
+  }
+  header {
+    background: linear-gradient(135deg, #0d0d1a 0%, #1a1a3a 50%, #0d1a2e 100%);
+    border-bottom: 2px solid var(--accent);
+    padding: 32px 24px 24px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at center, rgba(233,69,96,0.08) 0%, transparent 70%);
+  }
+  header h1 { font-size: 2.1em; font-weight: 700; letter-spacing: 0.08em; color: var(--gold); text-shadow: 0 0 20px rgba(245,166,35,0.4); position: relative; }
+  header p { margin-top: 8px; color: var(--text-dim); font-size: 0.9em; position: relative; }
+  .wrapper { display: flex; max-width: 1200px; margin: 0 auto; }
+  nav {
+    width: 240px; flex-shrink: 0;
+    position: sticky; top: 0; height: 100vh; overflow-y: auto;
+    background: var(--surface); border-right: 1px solid var(--border);
+    padding: 20px 0;
+  }
+  nav::-webkit-scrollbar { width: 4px; }
+  nav::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+  nav .nav-title { padding: 0 16px 12px; font-size: 0.75em; font-weight: 700; letter-spacing: 0.1em; color: var(--text-dim); text-transform: uppercase; border-bottom: 1px solid var(--border); margin-bottom: 8px; }
+  nav a { display: block; padding: 8px 16px; color: var(--text-dim); text-decoration: none; font-size: 0.88em; transition: all 0.15s; border-left: 3px solid transparent; }
+  nav a:hover { color: var(--text); background: rgba(255,255,255,0.04); border-left-color: var(--accent); }
+  nav a.active { color: var(--gold); border-left-color: var(--gold); background: rgba(245,166,35,0.06); }
+  nav a .num { display: inline-block; min-width: 22px; color: var(--accent); font-weight: 700; font-size: 0.85em; }
+  main { flex: 1; min-width: 0; padding: 32px 40px 60px; }
+  .section { margin-bottom: 56px; scroll-margin-top: 20px; }
+  .section-header { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+  .section-num { background: var(--accent); color: #fff; font-size: 0.8em; font-weight: 700; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 6px; flex-shrink: 0; }
+  .section-num.gold { background: var(--gold); color: #1a1a2e; }
+  .section-title { font-size: 1.4em; font-weight: 700; color: var(--text); }
+  .subsection { margin: 24px 0; }
+  .subsection-title { font-size: 1.05em; font-weight: 700; color: var(--gold); margin-bottom: 10px; padding-left: 12px; border-left: 3px solid var(--gold); }
+  p { margin-bottom: 10px; }
+  .guide-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; margin: 16px 0; }
+  .guide-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; }
+  .guide-card h4 { color: var(--gold); font-size: 0.95em; font-weight: 700; margin-bottom: 6px; }
+  .guide-card p { font-size: 0.88em; color: var(--text-dim); margin: 0; line-height: 1.65; }
+  .note { background: rgba(91,155,213,0.08); border: 1px solid rgba(91,155,213,0.3); border-left: 4px solid var(--blue); border-radius: 0 6px 6px 0; padding: 10px 14px; margin: 12px 0; font-size: 0.88em; color: #b8cfe8; }
+  .note::before { content: '※ '; font-weight: 700; color: var(--blue); }
+  .warn { background: rgba(245,166,35,0.07); border: 1px solid rgba(245,166,35,0.3); border-left: 4px solid var(--gold); border-radius: 0 6px 6px 0; padding: 10px 14px; margin: 12px 0; font-size: 0.88em; color: #e8d5a0; }
+  .warn::before { content: '⚠ '; font-weight: 700; }
+  .cmd-table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 0.9em; }
+  .cmd-table th { background: var(--surface2); color: var(--gold); padding: 8px 14px; text-align: left; font-weight: 700; border-bottom: 2px solid var(--accent); }
+  .cmd-table td { padding: 7px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .cmd-table tr:hover td { background: rgba(255,255,255,0.03); }
+  .cmd-table .key { font-family: 'Consolas','Courier New',monospace; background: var(--code-bg); border: 1px solid var(--border); border-radius: 4px; padding: 2px 7px; color: var(--green); font-size: 0.95em; white-space: nowrap; }
+  .example-box { background: var(--code-bg); border: 1px solid var(--border); border-radius: 6px; padding: 12px 16px; margin: 12px 0; font-family: 'Consolas','Courier New',monospace; font-size: 0.88em; color: var(--green); white-space: pre; line-height: 1.7; }
+  .stat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; margin: 16px 0; }
+  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; }
+  .stat-card h4 { color: var(--accent); font-size: 0.95em; font-weight: 700; margin-bottom: 6px; }
+  .stat-card p { font-size: 0.87em; color: var(--text-dim); margin: 0; line-height: 1.6; }
+  .skill-table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 0.88em; }
+  .skill-table th { background: var(--surface2); color: var(--text-dim); padding: 6px 12px; text-align: left; font-size: 0.85em; border-bottom: 1px solid var(--border); }
+  .skill-table td { padding: 6px 12px; border-bottom: 1px solid rgba(255,255,255,0.05); vertical-align: top; }
+  .skill-table tr:hover td { background: rgba(255,255,255,0.025); }
+  .item-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 14px; margin: 16px 0; }
+  .item-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; }
+  .item-card h4 { color: var(--green); font-size: 0.95em; font-weight: 700; margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+  .item-card p { font-size: 0.87em; color: var(--text-dim); margin: 0; line-height: 1.65; }
+  .toc-box { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px 24px; margin-bottom: 36px; }
+  .toc-box h3 { color: var(--gold); font-size: 0.9em; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 12px; }
+  .toc-box ol { list-style: none; column-count: 2; column-gap: 20px; }
+  .toc-box li { margin-bottom: 6px; }
+  .toc-box a { color: var(--text-dim); text-decoration: none; font-size: 0.92em; transition: color 0.15s; }
+  .toc-box a:hover { color: var(--gold); }
+  .toc-box .toc-num { color: var(--accent); font-weight: 700; margin-right: 6px; }
+  .auto-target { display: grid; grid-template-columns: auto 1fr; gap: 4px 16px; margin: 10px 0; font-size: 0.9em; }
+  .auto-target .k { font-family: monospace; background: var(--code-bg); border: 1px solid var(--border); border-radius: 4px; padding: 2px 8px; color: var(--gold); text-align: center; }
+  .auto-target .v { color: var(--text-dim); align-self: center; }
+  .macro-example { background: var(--code-bg); border: 1px solid var(--border); border-radius: 6px; padding: 14px 16px; margin: 12px 0; font-family: monospace; font-size: 0.9em; line-height: 1.8; }
+  .macro-example .comment { color: var(--text-dim); }
+  .macro-example .key-def { color: var(--green); }
+  .macro-example .value { color: var(--gold); }
+  .macro-example .section-label { color: var(--accent); font-weight: 700; }
+  hr.sep { border: none; border-top: 1px solid var(--border); margin: 24px 0; }
+  @media (max-width: 768px) {
+    nav { display: none; }
+    main { padding: 20px 16px 40px; }
+    .guide-grid, .stat-grid, .item-grid { grid-template-columns: 1fr; }
+    .toc-box ol { column-count: 1; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>⚔ Text Dungeon — 游戏手册</h1>
+  <p>操作方法・术语・命令完全指南</p>
+</header>
+
+<div class="wrapper">
+<nav id="sidenav">
+  <div class="nav-title">目录</div>
+  <a href="#s0"><span class="num">0.</span> 什么是Text Dungeon？</a>
+  <a href="#s1"><span class="num">1.</span> 开始·继续·暂停</a>
+  <a href="#s2"><span class="num">2.</span> 角色创建</a>
+  <a href="#s3"><span class="num">3.</span> 主画面</a>
+  <a href="#s4"><span class="num">4.</span> 战斗画面与战斗</a>
+  <a href="#s5"><span class="num">5.</span> 咒文</a>
+  <a href="#s6"><span class="num">6.</span> 道具</a>
+  <a href="#s7"><span class="num">7.</span> 对象</a>
+  <a href="#s8"><span class="num">8.</span> 命令</a>
+  <a href="#s9"><span class="num">9.</span> 宏</a>
+</nav>
+
+<main>
+
+<div class="toc-box">
+  <h3>📖 目录</h3>
+  <ol>
+    <li><a href="#s0"><span class="toc-num">0.</span> 什么是Text Dungeon？</a></li>
+    <li><a href="#s1"><span class="toc-num">1.</span> 游戏开始、继续与暂停</a></li>
+    <li><a href="#s2"><span class="toc-num">2.</span> 角色创建</a></li>
+    <li><a href="#s3"><span class="toc-num">3.</span> 主画面</a></li>
+    <li><a href="#s4"><span class="toc-num">4.</span> 战斗画面与战斗</a></li>
+    <li><a href="#s5"><span class="toc-num">5.</span> 咒文</a></li>
+    <li><a href="#s6"><span class="toc-num">6.</span> 道具</a></li>
+    <li><a href="#s7"><span class="toc-num">7.</span> 对象</a></li>
+    <li><a href="#s8"><span class="toc-num">8.</span> 命令</a></li>
+    <li><a href="#s9"><span class="toc-num">9.</span> 宏</a></li>
+  </ol>
+</div>
+
+
+<!-- ===== SECTION 0 ===== -->
+<section class="section" id="s0">
+  <div class="section-header">
+    <div class="section-num gold">0</div>
+    <div class="section-title">什么是Text Dungeon？</div>
+  </div>
+  <p>Text Dungeon是文字冒险形式的RPG。游戏目标是深入地下迷宫，从潜伏其中的邪恶魔术师<strong>『新吾』</strong>手中夺回<strong>「生命之戒」</strong>，并带回地面。</p>
+</section>
+
+
+<!-- ===== SECTION 1 ===== -->
+<section class="section" id="s1">
+  <div class="section-header">
+    <div class="section-num">1</div>
+    <div class="section-title">游戏开始、继续与暂停</div>
+  </div>
+  <p>运行 <code>TextDungeon.exe</code> 后会显示标题画面，同时显示：</p>
+  <div class="example-box">1. 重新开始
+2. 继续游戏</div>
+  <p>通过输入项目开头的数字或点击来选择（以下同）。</p>
+  <div class="subsection">
+    <div class="subsection-title">新游戏</div>
+    <p>选择 <strong>1</strong> 进入角色创建画面。</p>
+  </div>
+  <div class="subsection">
+    <div class="subsection-title">继续游戏</div>
+    <p>选择 <strong>2</strong>，输入角色名称后按 <kbd>Enter</kbd> 键。</p>
+  </div>
+  <div class="subsection">
+    <div class="subsection-title">暂停与存档</div>
+    <p>点击窗口右上角的×等方式关闭程序即可暂停，系统会自动创建存档。之后可用「继续游戏」从同一位置继续。</p>
+  </div>
+</section>
+
+
+<!-- ===== SECTION 2 ===== -->
+<section class="section" id="s2">
+  <div class="section-header">
+    <div class="section-num">2</div>
+    <div class="section-title">角色创建</div>
+  </div>
+  <p>角色创建画面中会显示一个新生成的角色。<br>
+  按 <kbd>Enter</kbd> 键或点击「确定」即可开始游戏。<br>
+  按 <kbd>r</kbd> 键或点击「重投」即可重新生成参数（可无限次）。</p>
+  <p><span style="color:var(--blue);">蓝色字</span>或<span style="color:var(--gold);">黄色字</span>显示的项目为可手动设置的参数。</p>
+  <div class="note">黄色字的项目修改后，能力值、技能等部分参数会自动重投。</div>
+
+  <hr class="sep">
+
+  <div class="subsection">
+    <div class="subsection-title">各参数说明</div>
+    <div class="stat-grid">
+      <div class="stat-card"><h4>称号</h4><p>角色的别称、头衔或自称等。不影响能力和技能。</p></div>
+      <div class="stat-card"><h4>姓名</h4><p>角色的名字。不影响能力和技能。</p></div>
+      <div class="stat-card"><h4>性别</h4><p>可从男性、女性、不明中选择。不影响能力和技能。</p></div>
+      <div class="stat-card"><h4>年龄</h4><p>可在15-99之间设定。不影响能力和技能。</p></div>
+      <div class="stat-card"><h4>身高</h4><p>可在100-200之间设定。不影响能力和技能。</p></div>
+      <div class="stat-card"><h4>体重</h4><p>可在30-150之间设定。不影响能力和技能。</p></div>
+      <div class="stat-card"><h4>类型</h4><p>表示能力适性和成长倾向。可从6种类型中选择。更改后能力值、技能自动重投。</p></div>
+      <div class="stat-card"><h4>出身地</h4><p>可从10个地方选择。主要影响初始能力和技能。更改后部分参数自动重投。</p></div>
+    </div>
+  </div>
+  <div class="note">无论选择哪种类型，对装备和可使用道具均没有限制。</div>
+
+  <hr class="sep">
+
+  <div class="subsection">
+    <div class="subsection-title">类型说明</div>
+    <div class="guide-grid">
+      <div class="guide-card"><h4>⚔ 战士</h4><p>擅长直接战斗，体力、技量高，战斗技能容易成长。魔法技能几乎不会学习，魔力低。</p></div>
+      <div class="guide-card"><h4>🗡 盗贼</h4><p>运势高，擅长隐密行动和开锁等。偷袭、投掷等技巧性技能较易掌握。比战士稍能使用魔法。</p></div>
+      <div class="guide-card"><h4>✝ 僧侣</h4><p>均衡型，战斗和魔法都能应付。可习得大量咒文，技能也有均衡成长的倾向。</p></div>
+      <div class="guide-card"><h4>✨ 魔法师</h4><p>魔力高，可习得大量咒文。游戏开始时持有咒文书一本。不擅长直接战斗。</p></div>
+      <div class="guide-card"><h4>⚔✨ 魔法战士</h4><p>同时具备战士和魔法师的特性，体力、技量高，一开始就能使用魔法。但成长较慢，成长空间也较小。</p></div>
+      <div class="guide-card"><h4>👤 市民</h4><p>普通市民，体力、技量低，初始技能只有1个，且很少是战斗或魔法相关。</p></div>
+    </div>
+  </div>
+
+  <hr class="sep">
+
+  <div class="subsection">
+    <div class="subsection-title">出身地说明</div>
+    <div class="guide-grid">
+      <div class="guide-card"><h4>中央都市</h4><p>国家首都，高教育水准。技量值有较高的倾向。</p></div>
+      <div class="guide-card"><h4>商业都市</h4><p>贸易、商业繁荣的湾岸城市。运势值有较高的倾向。</p></div>
+      <div class="guide-card"><h4>矿山都市</h4><p>因矿山业发展的城市。体力值有较高的倾向。</p></div>
+      <div class="guide-card"><h4>森林小镇</h4><p>大森林入口的小镇。隐密行动有加成。</p></div>
+      <div class="guide-card"><h4>遗迹小镇</h4><p>沙漠遗迹群附近的小镇。据说魔力较高。</p></div>
+      <div class="guide-card"><h4>四叉路小镇</h4><p>交易路交汇的小镇，多元文化。可能获得多种加成。</p></div>
+      <div class="guide-card"><h4>北洋小镇</h4><p>北方寒冷地带的海岸小镇。体格优越，攻击方面有加成。</p></div>
+      <div class="guide-card"><h4>草原村落</h4><p>西北部草原地带的村落。移动方面有加成。</p></div>
+      <div class="guide-card"><h4>沼泽村落</h4><p>东南部湿原地带的村落。据说对魔法抵抗力强。</p></div>
+      <div class="guide-card"><h4>雪原村落</h4><p>北方降雪地带的村落。据说对饥饿和疾病抵抗力强。</p></div>
+    </div>
+  </div>
+
+  <hr class="sep">
+
+  <div class="subsection">
+    <div class="subsection-title">能力值说明</div>
+    <div class="stat-grid">
+      <div class="stat-card"><h4>❤ 体力</h4><p>承受肉体损耗的程度。降至0以下则角色死亡，游戏结束。可通过进食（<code>E</code>）或休息（<code>R</code>）恢复。</p></div>
+      <div class="stat-card"><h4>⚡ 技量</h4><p>行动及操控物品的能力。越高越容易命中敌人，也越不容易被命中。可通过休息恢复。</p></div>
+      <div class="stat-card"><h4>🍀 运势</h4><p>角色的运气强弱。越高越幸运，越容易发生好事。也影响开锁、解除陷阱等的成功率。可通过休息恢复。</p></div>
+      <div class="stat-card"><h4>✨ 魔力</h4><p>魔法力量的大小。越强咒文效果越大。随回合经过缓慢恢复。游戏中不显示该数值。</p></div>
+    </div>
+    <div class="note">体力、技量、运势、魔力各自设有最大值，可通过升级等方式提高。</div>
+    <div class="warn">角色死亡后存档文件会被自动删除，无法从存档处重新开始。死亡时会在save文件夹中输出角色信息文件（角色名+_morgue.txt）。</div>
+  </div>
+
+  <hr class="sep">
+
+  <div class="subsection">
+    <div class="subsection-title">固有能力/技能</div>
+    <p>该角色固有的能力或技能，创建角色时仅给予一个。在游戏中既不能重新获得也不会失去。</p>
+  </div>
+
+  <hr class="sep">
+
+  <div class="subsection">
+    <div class="subsection-title">技能说明</div>
+    <p>技能是对冒险有用的技艺或知识，每个技能设有等级。可通过升级习得新技能或提升等级，也可通过事件习得/失去。最多可习得8个技能。用 <code>S</code> 命令查看技能一览；选择技能可阅读其说明。</p>
+
+    <table class="skill-table">
+      <tr><th>技能名称</th><th>效果</th></tr>
+      <tr><td>剑术 / 短剑术 / 斧术 / 钝器术 / 枪术 / 格斗术</td><td>武器技能，表示对对应类别武器的熟练度。命中率和伤害获得加成。剑术↔短剑术、斧术↔钝器术存在关联（习得一方Lv.n时，另一方视为Lv.n-1）。枪术也适用于「法杖」类武器。格斗术在未装备武器时适用，装备时也可能产生追加攻击。</td></tr>
+      <tr><td>投掷</td><td>使用 <code>t</code>（投掷）命令时，提高命中率、伤害和效果。</td></tr>
+      <tr><td>闪避身法</td><td>更容易躲避敌人攻击、吐息、魔法和陷阱。穿重型铠甲时效果减弱。</td></tr>
+      <tr><td>铠甲</td><td>装备铠甲时防御力加成。装备重量按比实际更轻的方式计算。对重型铠甲效果更佳。</td></tr>
+      <tr><td>盾牌技</td><td>装备盾牌时格挡率和防御力加成。盾牌重量也按比实际更轻的方式计算。</td></tr>
+      <tr><td>先制</td><td>战斗时更容易先于敌人攻击。直接攻击命中率加成。</td></tr>
+      <tr><td>偷袭</td><td>攻击尚未发现我方、混乱中或恐惧中的敌人时获得大幅加成。使用短剑类（尤其匕首）特别有效。</td></tr>
+      <tr><td>隐密</td><td>更难被生物发现。穿重型铠甲时效果减弱。</td></tr>
+      <tr><td>疾足</td><td>减少移动消耗回合数。降低移动时被攻击概率，增加敌人放弃追踪的概率。</td></tr>
+      <tr><td>怪力</td><td>提高持有物的重量上限。</td></tr>
+      <tr><td>收纳术</td><td>提高持有物的容量上限。</td></tr>
+      <tr><td>解除</td><td>提高开锁及陷阱识别、解除的成功率。更容易发现隐藏的门和陷阱。</td></tr>
+      <tr><td>偷窃术</td><td>提高盗窃成功率。也稍微提高开锁和陷阱解除的成功率。</td></tr>
+      <tr><td>狂战士化</td><td>可通过 <code>a</code> 命令发动。发动后战斗能力大幅强化，移动速度×2。无法执行知识性行动，每回合消耗1点体力。一定回合后结束。受攻击时可能意外失控。</td></tr>
+      <tr><td>狂战士控制</td><td>抑制意外失控。可在狂战士化中通过 <code>a</code> 命令手动停止（不保证成功）。</td></tr>
+      <tr><td>咒文吟唱</td><td>减少吟唱咒文所需回合数（吟唱时间）。增加咒文记忆容量。</td></tr>
+      <tr><td>神秘学</td><td>减少吟唱咒文时的体力消耗量。</td></tr>
+    </table>
+
+    <div class="subsection" style="margin-top:16px;">
+      <div class="subsection-title">魔法技能与对应系统</div>
+      <p>以下技能各自提高对应系统的咒文效果，同时减少吟唱时间和体力消耗。吟唱时间减少与「咒文吟唱」不叠加（取较高者）。体力消耗减少与「神秘学」两者均可叠加。</p>
+      <table class="skill-table">
+        <tr><th>技能</th><th>对应咒文系统</th></tr>
+        <tr><td>魔法力学</td><td>破坏</td></tr>
+        <tr><td>火元素术</td><td>火</td></tr>
+        <tr><td>水元素术</td><td>水</td></tr>
+        <tr><td>风元素术</td><td>风</td></tr>
+        <tr><td>地元素术</td><td>地</td></tr>
+        <tr><td>药草学</td><td>毒</td></tr>
+        <tr><td>咒术</td><td>咒术</td></tr>
+        <tr><td>幻术</td><td>幻术</td></tr>
+        <tr><td>炼金术</td><td>炼金</td></tr>
+        <tr><td>占星术</td><td>预见</td></tr>
+        <tr><td>传送术</td><td>传送</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <hr class="sep">
+
+  <div class="subsection">
+    <div class="subsection-title">初始咒文</div>
+    <ul style="margin-left:20px; color:var(--text-dim); font-size:0.9em;">
+      <li style="margin-bottom:4px;"><strong>魔法师类型 / 僧侣类型</strong>：初始记忆2个咒文（魔法师还额外持有咒文书一本）</li>
+      <li style="margin-bottom:4px;"><strong>魔法战士类型</strong>：初始记忆1个咒文</li>
+      <li><strong>战士 / 盗贼 / 市民</strong>：没有初始咒文</li>
+    </ul>
+  </div>
+</section>
+
+
+<!-- ===== SECTION 3 ===== -->
+<section class="section" id="s3">
+  <div class="section-header">
+    <div class="section-num">3</div>
+    <div class="section-title">主画面</div>
+  </div>
+  <p>完成角色创建后，主画面将显示。主画面分为以下四个区域：</p>
+
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:16px 0; max-width:600px;">
+    <div class="guide-card" style="border-top:3px solid var(--gold);"><h4>↖ 左上：对象显示部</h4><p>当前位置你可以互动的项目（对象）一览，附有编号显示。</p></div>
+    <div class="guide-card" style="border-top:3px solid var(--accent);"><h4>↗ 右上：状态显示部</h4><p>称号、姓名、等级、经验值、各能力值（当前/最大）、饥饿状态和状态异常等。</p></div>
+    <div class="guide-card" style="border-top:3px solid var(--blue);"><h4>↙ 左下：消息显示部</h4><p>行动结果以消息形式显示。出现「→继续」时点击或按任意键查看后续。</p></div>
+    <div class="guide-card" style="border-top:3px solid var(--green);"><h4>↘ 右下：小地图显示部</h4><p>已访问过的房间以蓝色方形显示。白色圆点为当前位置。</p></div>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">对象的操作</div>
+    <p>选择对象后执行对应的规定行动：</p>
+    <div class="example-box">1:告示牌      → 阅读
+2:面包干粮    → 拾取
+3:短剑        → 拾取
+4:3只哥布林   → 攻击</div>
+    <p>也可对对象执行规定以外的行动（例如执行 <code>A</code> 命令后选择1即可攻击告示牌）。</p>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">状态显示</div>
+    <p>状态异常显示在能力值下方。<span style="color:var(--gold);">黄色字</span>为不良状态，<span style="color:var(--blue);">蓝色字</span>为良好状态。状态太多时用 <code>C</code> 命令查看全部。</p>
+  </div>
+
+  <hr class="sep">
+
+  <div class="subsection">
+    <div class="subsection-title">生物</div>
+    <table class="cmd-table">
+      <tr><th>显示颜色</th><th>含义</th></tr>
+      <tr><td><span style="color:#f5a623;">黄色</span></td><td>敌对生物——尚未发现你</td></tr>
+      <tr><td><span style="color:#e94560;">红色</span></td><td>敌对生物——已发现你，每回合发起攻击</td></tr>
+      <tr><td><span style="color:#5b9bd5;">蓝色</span></td><td>友好生物——选择后与其交谈</td></tr>
+    </table>
+    <div class="note">「友好」只是指该生物目前没有要立刻袭击你的样子，并不意味着是你真正的朋友！</div>
+    <p>友好生物有时会有委托（任务）。交谈时出现「听取委托」选项可确认任务详情。已接受的任务可随时通过 <code>Q</code> 命令重新确认。</p>
+    <div class="warn">大多数任务有时间限制。无法在规定回合数内完成时视为失败，无法获得报酬。请充分考虑后再接受。</div>
+  </div>
+
+  <hr class="sep">
+
+  <div class="subsection">
+    <div class="subsection-title">小地图与移动</div>
+    <table class="cmd-table" style="margin-bottom:14px;">
+      <tr><th>小地图显示</th><th>含义</th></tr>
+      <tr><td>蓝色/黄色边框的房间</td><td>有独立名称的「特殊房间」。蓝色边框表示相对安全的地方（商店等）。</td></tr>
+      <tr><td>房间左上角的亮蓝色■</td><td>上楼梯</td></tr>
+      <tr><td>房间左下角的深蓝色■</td><td>下楼梯</td></tr>
+      <tr><td>房间左下角的红色■</td><td>通往特殊楼层的入口（特别的危险在等待！）</td></tr>
+    </table>
+    <p>出口显示在对象显示区域右侧：</p>
+    <div class="example-box">↑:北侧出口    ←:西侧出口
+↓:南侧出口    →:东侧门</div>
+    <table class="cmd-table" style="margin-top:10px;">
+      <tr><th>门的颜色</th><th>含义</th></tr>
+      <tr><td><span style="color:#e0e0e0;">白色</span>（小地图：蓝色）</td><td>未上锁的门</td></tr>
+      <tr><td><span style="color:#e94560;">红色</span></td><td>已上锁的门。可用 <code>u</code> 命令尝试开锁。</td></tr>
+      <tr><td><span style="color:#f5a623;">黄色</span></td><td>不确定是否上锁。选择后可确认（消耗1回合）。上锁时可用 <code>u</code> 命令尝试开锁。</td></tr>
+    </table>
+    <div class="note">移动也可以用 <code>h</code>/<code>j</code>/<code>k</code>/<code>l</code> 键（分别与←/↓/↑/→键效果相同）。</div>
+    <p>房间有楼梯时，出口下方显示 <code>&lt;:上楼梯</code> 或 <code>&gt;:下楼梯</code>。<br>
+    楼梯下方的「地面上」显示地面上的道具，点击可拾取。用 <code>g</code> 命令查看完整一览。</p>
+  </div>
+</section>
+
+
+<!-- ===== SECTION 4 ===== -->
+<section class="section" id="s4">
+  <div class="section-header">
+    <div class="section-num">4</div>
+    <div class="section-title">战斗画面与战斗</div>
+  </div>
+  <p>在主画面选择敌对生物后，画面切换至战斗画面：</p>
+  <div class="example-box">              技量  体力
+1:哥布林        5     5
+2:哥布林        4     6
+3:哥布林        5     4</div>
+  <p>选择生物对其发起攻击。</p>
+
+  <div class="subsection">
+    <div class="subsection-title">战斗基本规则</div>
+    <ul style="margin-left:20px; color:var(--text-dim); font-size:0.9em; line-height:2.1;">
+      <li>命中判定：你的技量值、生物的技量值、武器性能、对应技能等级（未习得则为等级0）及随机数值综合决定。</li>
+      <li>原则上你每攻击1次，生物也会反攻1次（速度较快/较慢的生物除外）。</li>
+      <li>徒手（未装备武器）时，攻击和防御都受到大幅惩罚（「格斗术」技能可缓解）。</li>
+      <li>按 <kbd>Esc</kbd> 键可随时返回主画面。</li>
+    </ul>
+    <div class="warn">徒手战斗同时对攻击和防御造成大幅惩罚。请务必装备武器！</div>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">战斗画面专用命令</div>
+    <table class="cmd-table">
+      <tr><th>按键</th><th>说明</th></tr>
+      <tr><td><span class="key">b</span></td><td><strong>防御</strong>——专注于防御，对方攻击较难命中，所受伤害也会减轻（主画面中为「警戒」）</td></tr>
+      <tr><td><span class="key">A</span></td><td><strong>大力挥击</strong>——运气好时可造成比通常更大的伤害，无论成功/失败都消耗1点运势（主画面中为「攻击」）</td></tr>
+    </table>
+    <div class="note"><code>R</code>（休息）、<code>M</code>（记忆咒文）等部分命令仅能在主画面执行。</div>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">自动目标</div>
+    <div class="auto-target">
+      <div class="k">-</div><div class="v">以体力最小的敌人为目标（体力0除外）</div>
+      <div class="k">+</div><div class="v">以体力最大的敌人为目标</div>
+      <div class="k">/</div><div class="v">以技量最小的敌人为目标</div>
+      <div class="k">*</div><div class="v">以技量最大的敌人为目标</div>
+    </div>
+    <p style="margin-top:8px; font-size:0.88em; color:var(--text-dim);">若符合条件的生物有多个，则攻击编号最小的（显示在最上方的）。吟唱咒文或挥动魔杖时选择目标也可使用这些命令。</p>
+    <div class="warn">请勿连按过快而错过重要消息或未注意到体力下降！错过的消息可通过 <code>L</code> 命令回看。</div>
+  </div>
+</section>
+
+
+<!-- ===== SECTION 5 ===== -->
+<section class="section" id="s5">
+  <div class="section-header">
+    <div class="section-num">5</div>
+    <div class="section-title">咒文</div>
+  </div>
+  <p>角色记忆了咒文时，可通过 <code>m</code> 命令吟唱咒文。从已记忆咒文一览中选择后开始吟唱（部分咒文需先选择对象）。</p>
+
+  <div class="subsection">
+    <div class="subsection-title">咒文参数</div>
+    <div class="stat-grid">
+      <div class="stat-card"><h4>等级</h4><p>咒文的强度，记忆时也会消耗对应的记忆容量。</p></div>
+      <div class="stat-card"><h4>吟唱时间</h4><p>吟唱所需回合数。≥2时，吟唱中受到攻击或失去目标则中断。</p></div>
+      <div class="stat-card"><h4>消耗体力</h4><p>吟唱完成时消耗的体力。降至0以下则死亡！</p></div>
+      <div class="stat-card"><h4>系统</h4><p>咒文所属的系统。习得对应技能时减少消耗并增大效果。</p></div>
+    </div>
+    <div class="note">装备重型铠甲时吟唱时间增加（铠甲基本AC-3）。例：锁子甲（基本AC=5）→吟唱时间+2。</div>
+    <p>按 <code>m</code> → <kbd>Enter</kbd> 可查看咒文一览及各参数。一览显示时按 <code>?</code> 后选择咒文可阅读其说明。</p>
+  </div>
+
+  <hr class="sep">
+
+  <div class="subsection">
+    <div class="subsection-title">记忆咒文</div>
+    <p>通过 <code>M</code> 命令选择咒文书，再选择咒文开始记忆。</p>
+    <div class="warn">记忆需要较多回合。记忆中若有敌对生物出现，记忆会中断并需要从头重来。</div>
+    <div class="subsection-title" style="margin-top:16px;">记忆容量</div>
+    <p>可记忆的咒文等级总计。</p>
+    <div class="example-box">例：记忆容量为4时
+  等级1咒文×1 + 等级3咒文×1（1+3=4）
+  等级2咒文×2（2+2=4）</div>
+    <p>可通过升级和「咒文吟唱」技能增加。执行 <code>M</code> 命令时画面上方显示当前剩余容量。</p>
+  </div>
+
+  <hr class="sep">
+
+  <div class="subsection">
+    <div class="subsection-title">注意会吟唱咒文的生物</div>
+    <p>生物的咒文与你的同等甚至更强。对正在吟唱的生物造成伤害可以中断其吟唱。</p>
+  </div>
+</section>
+
+
+<!-- ===== SECTION 6 ===== -->
+<section class="section" id="s6">
+  <div class="section-header">
+    <div class="section-num">6</div>
+    <div class="section-title">道具</div>
+  </div>
+  <p>获得的道具被收纳在背包中，随时可取出使用。所有道具都有重量和大小，无法超过上限持有。</p>
+
+  <div class="subsection">
+    <div class="subsection-title">持有物显示（<code>I</code> 命令）</div>
+    <p>显示持有道具一览（种别、数量、重量、大小）。用←/→键翻页。选择道具查看详情。</p>
+    <div class="note">点击「名称」「种别」「重量」「大小」标签可排序（第一次降序，之后切换升序/降序）。点击「名称」按符号字母顺序排序。</div>
+    <p>一览上方显示金币数量及 <strong>重量:***/****　容量:***/****</strong>。例：重量:250/3000 表示当前总重量250、上限3000。</p>
+    <table class="cmd-table" style="margin-top:10px;">
+      <tr><th>上限</th><th>提高方法</th></tr>
+      <tr><td>重量上限</td><td>升级、「怪力」技能、「怪力之戒」等魔法道具</td></tr>
+      <tr><td>容量上限</td><td>仅「收纳术」技能</td></tr>
+    </table>
+    <div class="note">重量/容量上限之外，道具最多只能持有52种（a〜z、A〜Z）。</div>
+  </div>
+
+  <hr class="sep">
+
+  <div class="subsection">
+    <div class="subsection-title">道具鉴定</div>
+    <p>部分道具（药水、卷轴、戒指等）初次发现时带有「红色药水」「铜戒指」等未确定名，效果不明。鉴定后名称变为确定名，可通过 <code>I</code> 命令确认效果。</p>
+    <table class="cmd-table">
+      <tr><th>鉴定方法</th><th>说明</th></tr>
+      <tr><td>鉴定卷轴</td><td>从持有物或周围选择一件道具进行鉴定</td></tr>
+      <tr><td>商店</td><td>委托鉴定</td></tr>
+      <tr><td>咒文</td><td>用鉴定咒文鉴定</td></tr>
+      <tr><td>使用/装备</td><td>部分道具通过使用或装备即可鉴定</td></tr>
+    </table>
+  </div>
+
+  <hr class="sep">
+
+  <div class="subsection">
+    <div class="subsection-title">道具种别</div>
+    <div class="item-grid">
+      <div class="item-card">
+        <h4>⚔ 武器（短剑、长剣、钝器、斧、枪、法杖）</h4>
+        <p>通过 <code>e</code> 命令装备。不装备武器战斗时攻击和防御都受大幅惩罚（「格斗术」可缓解）。鉴定后显示命中/伤害修正值，如「短剑(+1,+1)」。法杖无修正值但吟唱咒文有加成。部分武器需双手装备（不能用盾）。双手持用时伤害有加成（法杖除外）。原则上装备后即被鉴定（神器除外）。</p>
+      </div>
+      <div class="item-card">
+        <h4>🛡 防具（盾牌、铠甲、头盔、护手甲、靴子、斗篷）</h4>
+        <p>通过 <code>e</code> 命令装备。AC（护甲等级）越高防御越好。鉴定后以[+x]显示AC修正值。通过 <code>e</code> 或 <code>C</code> 确认总AC值。例：AC:10（盾:3）表示盾牌AC为3、其他防具AC总和为10。原则上装备后即被鉴定（神器除外）。</p>
+      </div>
+      <div class="item-card">
+        <h4>💍 戒指</h4>
+        <p>通过 <code>e</code> 装备（左右手各一）。附有魔法效果（不一定是好的）。有修正值的戒指（如「体力之戒(+2)」）装备后即被鉴定（神器除外）。</p>
+      </div>
+      <div class="item-card">
+        <h4>📿 护符</h4>
+        <p>颈部只能装备一个。与戒指特性相近，但倾向于附有更稀有的魔法。有修正值的护符装备后即被鉴定（神器除外）。戒指和护符的修正值不会变动。</p>
+      </div>
+      <div class="item-card">
+        <h4>⚠ 被诅咒的装备品</h4>
+        <p>武器、防具、戒指、护符偶尔会被诅咒，大多有不良效果，装备后无法在解咒前取下。<span style="color:#f5a623;">黄色</span>=可能被诅咒，<span style="color:#e94560;">粉红色</span>=已确认被诅咒。可用解咒卷轴等魔法手段解除。</p>
+      </div>
+      <div class="item-card">
+        <h4>☆ 神器</h4>
+        <p>极为罕见的传说装备品，名称开头带☆或★。附有强大魔法（不一定是好的）。仅靠装备无法鉴定，需要用鉴定卷轴等鉴定。</p>
+      </div>
+      <div class="item-card">
+        <h4>🍞 食物</h4>
+        <p>生存必需品。随回合经过逐渐变得饥饿，饥饿状态下每隔一定回合失去体力。通过 <code>E</code> 命令进食填饱肚子（同时恢复一定体力）。营养量因食物而异。也有具有魔法效果的特殊食物。</p>
+      </div>
+      <div class="item-card">
+        <h4>🧪 药水</h4>
+        <p>通过 <code>q</code> 命令饮用后发挥效果。饮用后即被鉴定。部分药水有危险效果，鉴定时请尽量在安全情况下进行。</p>
+      </div>
+      <div class="item-card">
+        <h4>📜 卷轴</h4>
+        <p>通过 <code>r</code> 命令阅读后发挥效果。效果发挥时才被鉴定（无效果时不鉴定）。阅读后消失。</p>
+      </div>
+      <div class="item-card">
+        <h4>📚 书籍（咒文书）</h4>
+        <p>通过 <code>r</code> 命令阅读后即被鉴定，之后可用 <code>M</code> 命令记忆咒文。阅读已鉴定的咒文书可查看记载咒文的说明。</p>
+      </div>
+      <div class="item-card">
+        <h4>🪄 魔杖</h4>
+        <p>通过 <code>z</code> 命令朝目标挥动发挥效果（朝自己时按 <code>@</code>）。能量有限，使用数次后耗尽。挥动效果发挥时被鉴定（充填数此时不明）。充填数通过商店或鉴定卷轴确认，魔力高时挥动时也可能确认。</p>
+      </div>
+      <div class="item-card">
+        <h4>💰 金币</h4>
+        <p>此世界的货币。可用于商店购物及各种交易。是稀有品，请有计划地使用！（商店归属地下城商业行会，无法向商店出售道具）</p>
+      </div>
+      <div class="item-card">
+        <h4>🔑 钥匙</h4>
+        <p>用于开启上锁门。魔法钥匙可立即开锁通常门（<code>p</code> 命令）。每次使用消失一个。另有传说中的特殊钥匙。</p>
+      </div>
+      <div class="item-card">
+        <h4>📦 其他</h4>
+        <p>不属于上述种别的道具。从重要道具到毫无价值的都有。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ===== SECTION 7 ===== -->
+<section class="section" id="s7">
+  <div class="section-header">
+    <div class="section-num">7</div>
+    <div class="section-title">对象</div>
+  </div>
+  <p>迷宫中除道具和生物以外，还有大量可互动的对象登场。</p>
+
+  <div class="subsection">
+    <div class="subsection-title">告示牌</div>
+    <p>选择后可阅读消息。消息内容各异，也有毫无意义或写有谎言的情况，需要注意。除告示牌外还有公告栏等多种类型。</p>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">箱子</div>
+    <p>装有道具的箱子（木箱、铁箱等），大小各异。大多设有陷阱。</p>
+    <ol style="margin-left:20px; color:var(--text-dim); font-size:0.9em; line-height:2.2;">
+      <li>选择箱子 → 进行陷阱识别（例：「木箱（弓矢?）」）</li>
+      <li>再次选择 → 显示要解除的陷阱种类</li>
+      <li>选择正确的陷阱 → 尝试解除</li>
+    </ol>
+    <div class="warn">选择了错误的陷阱时，箱子上实际设置的陷阱会触发。即使选择正确，解除失败也会触发陷阱。</div>
+    <p>无论陷阱解除成功与否，之后都可以自由打开箱子。也可以向箱子中放入道具（按 <code>d</code> 键）。</p>
+    <div class="note">放入箱子的道具不会被生物拾取或食用。但部分生物可能在你不注意时打开箱子带走道具。</div>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">房间陷阱</div>
+    <p>进入有陷阱的房间时，会显示「感到墙壁有些不对劲」等提示消息。发现之前不会显示在对象一览中，你或生物的任何行动都可能触发陷阱。</p>
+    <p>用 <code>b</code> 命令搜索陷阱（概率由运势值和「解除」技能决定）。发现后选择陷阱可确实解除（可能需要数回合）。</p>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">石碑/石像</div>
+    <p>触摸（选择）后往往会发挥魔法效果（不一定是好的）。部分只有一次效果。初次发现时带有未确定名，触摸后鉴定。</p>
+  </div>
+
+  <div class="note">有名称的特殊房间内，若有主人，建议先与主人交谈再调查对象。直接调查可能激怒主人！</div>
+</section>
+
+
+<!-- ===== SECTION 8 ===== -->
+<section class="section" id="s8">
+  <div class="section-header">
+    <div class="section-num">8</div>
+    <div class="section-title">命令</div>
+  </div>
+  <p>基本上只需输入一个字母键即可执行，这被称为命令。也可以从命令列表或命令面板执行。</p>
+
+  <div class="guide-grid" style="margin-bottom:20px;">
+    <div class="guide-card">
+      <h4>命令列表（<code>c</code>）</h4>
+      <p>在画面右侧显示命令列表。用↑↓移动光标，Enter执行。用→←切换页面（第1页：小写字母；第2页：大写字母/特殊字符）。也可点击执行。</p>
+    </div>
+    <div class="guide-card">
+      <h4>命令面板（<code>P</code>）</h4>
+      <p>图标按钮集合。按 <code>P</code> 切换显示/隐藏。可执行 <code>a</code>/<code>e</code>/<code>d</code>/<code>i</code>/<code>I</code>/<code>b</code>/<code>v</code>/<code>m</code>/<code>C</code>/<code>R</code> 共10种命令。</p>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">小写字母命令一览</div>
+    <table class="cmd-table">
+      <tr><th>按键</th><th>命令名称</th><th>说明</th></tr>
+      <tr><td><span class="key">a</span></td><td>使用能力</td><td>使用通过突变或魔法装备品获得的能力。需要消耗（体力/运势/营养之一或组合）。不足时发动失败。体力不足时使用会导致死亡，请注意！</td></tr>
+      <tr><td><span class="key">b</span></td><td>警戒</td><td>警戒周围，有概率发现隐藏的陷阱和门。提升隐密能力。战斗画面中变为<strong>防御</strong>（被攻击概率下降，伤害减轻）。</td></tr>
+      <tr><td><span class="key">c</span></td><td>命令列表</td><td>显示命令列表。</td></tr>
+      <tr><td><span class="key">d</span></td><td>丢弃（指定数量）</td><td>将持有物丢到地面。道具有2个以上时可指定数量。输入非数字或超过持有数时丢弃全部。<code>d</code>可指定数量，<code>D</code>总是丢弃全部。</td></tr>
+      <tr><td><span class="key">e</span></td><td>装备</td><td>装备/取下道具。已有装备时自动先取下再装备。每次装备/取下消耗1回合，请勿在敌人面前随意换装！</td></tr>
+      <tr><td><span class="key">g</span> / <span class="key">^</span></td><td>显示地面道具</td><td>显示地面上道具的一览。选择后拾取（箱子则打开）。不消耗回合（拾取时消耗）。</td></tr>
+      <tr><td><span class="key">h/j/k/l</span></td><td>移动</td><td>分别与←/↓/↑/→键效果相同。</td></tr>
+      <tr><td><span class="key">i</span></td><td>使用道具</td><td>使用持有物（食物→食用，药水→饮用，卷轴→阅读等）。无对应行动的道具（如金币）使用后仅消耗回合，请注意。</td></tr>
+      <tr><td><span class="key">m</span></td><td>吟唱咒文</td><td>吟唱已记忆的咒文。部分咒文需先选择对象。吟唱可能需要数回合。详情请参考5.咒文。</td></tr>
+      <tr><td><span class="key">p</span></td><td>使用魔法钥匙</td><td>使用魔法钥匙对选择方向（←↓↑→）的门开锁。消耗品，每次使用消失一个。仅主画面可用。</td></tr>
+      <tr><td><span class="key">q</span></td><td>饮用</td><td>饮用药水等。存在危险效果的药水，请注意！</td></tr>
+      <tr><td><span class="key">r</span></td><td>阅读</td><td>阅读卷轴、咒文书等。阅读咒文书后即被鉴定，之后可用 <code>M</code> 命令记忆咒文。</td></tr>
+      <tr><td><span class="key">s</span></td><td>盗窃</td><td>从生物或商店盗取道具。成功率主要由运势值和偷窃术决定。被发现时激怒持有者；商店盗窃即使未被发现也会损害声誉。</td></tr>
+      <tr><td><span class="key">t</span></td><td>投掷</td><td>选择道具和目标进行投掷。向生物投掷合适道具（如匕首）命中时可造成伤害。</td></tr>
+      <tr><td><span class="key">u</span></td><td>开锁/解除</td><td>开锁门或解除箱子陷阱。成功率由运势值和解除技能决定。对未识别陷阱的箱子使用时直接打开（陷阱必定触发）。仅主画面可用。<br><small style="color:var(--text-dim);">提示：<code>u</code>+方向键可确实发现该方向墙壁中的隐藏门。</small></td></tr>
+      <tr><td><span class="key">v</span></td><td>查看</td><td>观察对象获取信息。生物：可获知技量值、体力值、状态异常和装备武器。不消耗回合。</td></tr>
+      <tr><td><span class="key">w</span></td><td>手持</td><td>手持对象（即使太大无法放入背包也可携带）。按 <code>@</code> 放入背包。<br><small style="color:var(--text-dim);">※手持物在战斗中优先于装备武器使用，请注意！</small></td></tr>
+      <tr><td><span class="key">z</span></td><td>挥动魔杖</td><td>选择魔杖和目标挥动。朝自己时按 <code>@</code>。充填数有限，可通过鉴定确认，魔力高时挥动时也可能确认。</td></tr>
+    </table>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">大写字母及特殊命令一览</div>
+    <table class="cmd-table">
+      <tr><th>按键</th><th>命令名称</th><th>说明</th></tr>
+      <tr><td><span class="key">A</span></td><td>攻击</td><td>攻击任意对象（包括友好生物和非生物对象）。选择生物切换至战斗画面。战斗画面中变为<strong>大力挥击</strong>（可能造成更大伤害，无论成功/失败消耗1点运势）。</td></tr>
+      <tr><td><span class="key">C</span></td><td>角色信息</td><td>显示角色信息（←→翻页）。第1页显示已确认的抗性和总AC值（仅含已鉴定部分）。Ctrl+P输出角色信息文件至save文件夹。不消耗回合。</td></tr>
+      <tr><td><span class="key">D</span></td><td>丢弃（全部）</td><td>与 <code>d</code> 相同但总是丢弃全部。</td></tr>
+      <tr><td><span class="key">E</span></td><td>进食</td><td>食用食物。饱腹时无法进食。进食后满足度和体力恢复。</td></tr>
+      <tr><td><span class="key">I</span></td><td>持有物一览</td><td>显示完整道具一览（←→翻页）。选择查看详情。不消耗回合。</td></tr>
+      <tr><td><span class="key">L</span></td><td>消息日志</td><td>回顾过去消息（最多30页/390行）。Ctrl+P输出日志文件。不消耗回合。</td></tr>
+      <tr><td><span class="key">M</span></td><td>记忆咒文</td><td>从咒文书记忆咒文。仅主画面可用。详情参考5.咒文。</td></tr>
+      <tr><td><span class="key">O</span></td><td>设置画面</td><td>调整画面缩放、音量、颜色、光标显示等。重置设置：删除save文件夹中的setting.ini后重启。</td></tr>
+      <tr><td><span class="key">P</span></td><td>命令面板</td><td>切换命令面板的显示/隐藏。</td></tr>
+      <tr><td><span class="key">Q</span></td><td>任务一览</td><td>显示已接受任务一览。选择查看详情。按 <code>-</code> 删除（视为失败；部分任务可重新接受）。不消耗回合。</td></tr>
+      <tr><td><span class="key">R</span></td><td>休息</td><td>经过20回合，恢复体力、技量、运势。附近有敌对生物或饥饿状态时无法休息，危险情况会中断休息。仅主画面可用。</td></tr>
+      <tr><td><span class="key">S</span></td><td>技能一览</td><td>显示已习得技能一览。选择查看技能说明。不消耗回合。</td></tr>
+      <tr><td><span class="key">T</span></td><td>返回标题</td><td>中断冒险返回标题画面（需要存档，不可不存档直接返回）。</td></tr>
+      <tr><td><span class="key">U</span></td><td>升级</td><td>经验值达到一定值时，显示区右侧出现绿色「Up」，执行此命令（或点击「Up」）升级。能力值提升，可习得/提升技能。不消耗回合，仅主画面可用。</td></tr>
+      <tr><td><span class="key">@</span></td><td>显示突变一览</td><td>显示已获得的突变一览。不消耗回合。（通过突变获得的能力可用 <code>a</code> 命令发动）</td></tr>
+      <tr><td><span class="key">=</span></td><td>注册宏</td><td>将宏注册到F1〜F12键。再次按 <code>=</code> 可重新读取macro.txt。不消耗回合。详情参考9.宏。</td></tr>
+      <tr><td><span class="key">?</span></td><td>显示命令一览</td><td>显示命令一览。不消耗回合。</td></tr>
+      <tr><td><span class="key">Ctrl+D</span></td><td>最小化窗口</td><td>即时最小化窗口。不消耗回合。</td></tr>
+    </table>
+  </div>
+
+  <div class="subsection">
+    <div class="subsection-title">～命令速查表～</div>
+    <div class="example-box">a: 使用能力              A: 攻击（战斗：大力挥击）
+b: 警戒（战斗：防御）    C: 角色信息
+c: 显示命令列表          D: 丢弃（全部）
+d: 丢弃（指定数量）      E: 进食
+e: 装备                  I: 持有物一览
+g: 显示地面道具          L: 显示消息日志
+i: 使用道具              M: 记忆咒文
+m: 吟唱咒文              O: 显示设置画面
+p: 使用魔法钥匙          P: 显示/隐藏命令面板
+q: 饮用                  Q: 显示任务一览
+r: 阅读                  R: 休息
+s: 盗窃                  S: 显示技能一览
+t: 投掷                  T: 返回标题
+u: 开锁/解除             U: 升级
+v: 查看                  @: 显示突变一览
+w: 手持                  =: 注册宏
+z: 挥动魔杖              ?: 显示命令一览
+h/j/k/l = ←/↓/↑/→       Ctrl+D: 最小化窗口</div>
+  </div>
+</section>
+
+
+<!-- ===== SECTION 9 ===== -->
+<section class="section" id="s9">
+  <div class="section-header">
+    <div class="section-num">9</div>
+    <div class="section-title">宏</div>
+  </div>
+  <p>宏是指用一个键执行多个命令的功能。可注册到字母键（a-z/A-Z）或F1〜F12键。</p>
+  <div class="example-box" style="margin-bottom:8px;"><span style="color:var(--text-dim);">例：吟唱「魔法箭」咒文</span>
+通常：  m → a  （2次按键）
+使用宏：F1        （1次按键）</div>
+
+  <hr class="sep">
+
+  <div class="subsection">
+    <div class="subsection-title">编辑macro.txt</div>
+    <p>编辑游戏安装目录 <code>save</code> 文件夹内的 <code>macro.txt</code> 来设置宏（所有角色共通）。游戏启动时读取。</p>
+    <div class="macro-example">
+<span class="comment"># macro.txt 编辑示例</span>
+<span class="key-def">a</span><span style="color:var(--text);">:</span><span class="value">ma</span>      <span class="comment"># 按'a'键 → 吟唱符号a的咒文</span>
+<span class="key-def">F1</span><span style="color:var(--text);">:</span><span class="value">Da!b</span>    <span class="comment"># 按F1键 → 丢弃所有a和b的道具</span></div>
+
+    <table class="cmd-table" style="margin-top:12px;">
+      <tr><th>特殊按键的写法</th><th></th></tr>
+      <tr><td>Enter键</td><td><code>~</code>（波浪号）或 <code>{ENTER}</code></td></tr>
+      <tr><td>Esc键</td><td><code>{ESC}</code></td></tr>
+      <tr><td>←键</td><td><code>{LEFT}</code>（或 <code>h</code>）</td></tr>
+      <tr><td>↑键</td><td><code>{UP}</code>（或 <code>k</code>）</td></tr>
+      <tr><td>↓键</td><td><code>{DOWN}</code>（或 <code>j</code>）</td></tr>
+      <tr><td>→键</td><td><code>{RIGHT}</code>（或 <code>l</code>）</td></tr>
+    </table>
+    <div class="note">宏中不能包含其他宏（F1〜F12键）（防止无限循环）。执行宏时消息只显示1页，但所有消息记录在日志中（用 <code>L</code> 回看）。</div>
+  </div>
+
+  <hr class="sep">
+
+  <div class="subsection">
+    <div class="subsection-title"><code>!</code> 命令与中断选项</div>
+    <p><code>!</code> 是宏专用命令，当符合设定的中断条件时中断宏。</p>
+    <div class="macro-example">
+<span class="section-label">-----中断选项-----</span>
+<span class="comment">①</span> <span class="key-def">'!'命令在周围有敌人时中断</span><span style="color:var(--text);">:</span> <span class="value">否</span>
+<span class="comment">②</span> <span class="key-def">'!'命令在体力为5以下时中断</span><span style="color:var(--text);">:</span> <span class="value">否</span>
+<span class="key-def">'!'命令在①且②时中断</span><span style="color:var(--text);">:</span> <span class="value">是</span>
+
+<span class="section-label">-----总是中断选项-----</span>
+<span class="comment">③</span> <span class="key-def">总是在周围有敌人时中断</span><span style="color:var(--text);">:</span> <span class="value">否</span>
+<span class="comment">④</span> <span class="key-def">总是在体力为5以下时中断</span><span style="color:var(--text);">:</span> <span class="value">否</span>
+<span class="key-def">总是在③且④时中断</span><span style="color:var(--text);">:</span> <span class="value">否</span>
+<span class="key-def">总是在麻痹时中断</span><span style="color:var(--text);">:</span> <span class="value">是</span></div>
+    <p style="font-size:0.88em; color:var(--text-dim); margin-top:8px;">将「：是」改为「是」以外则该条件不适用。可修改「体力为x以下时」中的x数值来调整判断基准值。「总是中断」选项无论宏中是否有 <code>!</code>，只要符合条件就会中断。</p>
+  </div>
+
+  <hr class="sep">
+
+  <div class="subsection">
+    <div class="subsection-title">游戏中通过 <code>=</code> 命令注册宏</div>
+    <p>在主画面或战斗画面按 <code>=</code> 键，选择要注册的键（F1〜F12），输入宏的键操作，再按F1键确认注册（macro.txt也会被自动更新保存）。</p>
+    <p>按 <code>=</code> → 再次按 <code>=</code> 可立即重新读取macro.txt并应用修改内容。</p>
+    <div class="note">若想重置宏为初始状态，从save文件夹中删除macro.txt并重启游戏，初始状态的macro.txt会自动重新生成。</div>
+  </div>
+</section>
+
+
+</main>
+</div>
+
+<script>
+const sections = document.querySelectorAll('.section');
+const navLinks = document.querySelectorAll('nav a');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navLinks.forEach(a => a.classList.remove('active'));
+      const active = document.querySelector(`nav a[href="#${e.target.id}"]`);
+      if (active) active.classList.add('active');
+    }
+  });
+}, { threshold: 0.2, rootMargin: '-60px 0px -60% 0px' });
+sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
